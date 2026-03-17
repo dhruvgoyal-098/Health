@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kidney Disease Predictor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+        .nav-link.active {
+            font-weight: bold;
+            border-bottom: 2px solid white;
+        }
+        .container {
+            max-width: 1400px;
+        }
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            border: none;
+            overflow: hidden;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+        .card-body {
+            padding: 30px;
+            background: white;
+            max-height: 800px;
+            overflow-y: auto;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+        }
+        .form-control, .form-select {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 6px;
+            font-size: 0.85rem;
+        }
+        .btn-predict {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 184, 148, 0.4);
+            color: white;
+        }
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .result-card {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+        .section-header {
+            background: #f8f9fa;
+            padding: 10px;
+            margin: 20px 0 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #00b894;
+            border-left: 5px solid #00b894;
+        }
+        .row {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/"><i class="fas fa-heartbeat me-2"></i>Health Predictor</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/heart">Heart</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/lung">Lung</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/diabetes">Diabetes</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/kidney">Kidney</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/disease">Disease</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/hospitals">Hospitals</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/news">Health News</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0"><i class="fas fa-kidneys me-2"></i>Kidney Disease Risk Assessment</h3>
+                <p class="mb-0 mt-2">Please fill in all 42 clinical parameters</p>
+            </div>
+            <div class="card-body">
+                <form id="kidneyForm">
+                    <!-- Basic Demographics -->
+                    <div class="section-header">Basic Demographics</div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Age of the patient (years)</label>
+                            <input type="number" class="form-control" name="Age of the patient" min="0" max="120" step="1" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Blood pressure (mm/Hg)</label>
+                            <input type="number" class="form-control" name="Blood pressure (mm/Hg)" min="80" max="250" step="1" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Body Mass Index (BMI)</label>
+                            <input type="number" class="form-control" name="Body Mass Index (BMI)" min="10" max="60" step="0.1" required>
+                        </div>
+                    </div>
+
+                    <!-- Urine Analysis - Basic -->
+                    <div class="section-header">Urine Analysis - Basic</div>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Specific gravity of urine</label>
+                            <input type="number" class="form-control" name="Specific gravity of urine" min="1.001" max="1.035" step="0.001" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Albumin in urine (0-5)</label>
+                            <input type="number" class="form-control" name="Albumin in urine" min="0" max="5" step="1" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Sugar in urine (0-5)</label>
+                            <input type="number" class="form-control" name="Sugar in urine" min="0" max="5" step="1" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Red blood cells in urine</label>
+                            <select class="form-control" name="Red blood cells in urine" required>
+                                <option value="">Select</option>
+                                <option value="normal">Normal</option>
+                                <option value="abnormal">Abnormal</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Pus cells in urine</label>
+                            <select class="form-control" name="Pus cells in urine" required>
+                                <option value="">Select</option>
+                                <option value="normal">Normal</option>
+                                <option value="abnormal">Abnormal</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Pus cell clumps in urine</label>
+                            <select class="form-control" name="Pus cell clumps in urine" required>
+                                <option value="">Select</option>
+                                <option value="not present">Not Present</option>
+                                <option value="present">Present</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Bacteria in urine</label>
+                            <select class="form-control" name="Bacteria in urine" required>
+                                <option value="">Select</option>
+                                <option value="not present">Not Present</option>
+                                <option value="present">Present</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Blood Tests - Basic -->
+                    <div class="section-header">Blood Tests - Basic</div>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Random blood glucose (mg/dl)</label>
+                            <input type="number" class="form-control" name="Random blood glucose level (mg/dl)" min="50" max="500" step="1" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Blood urea (mg/dl)</label>
+                            <input type="number" class="form-control" name="Blood urea (mg/dl)" min="1" max="300" step="1" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Serum creatinine (mg/dl)</label>
+                            <input type="number" class="form-control" name="Serum creatinine (mg/dl)" min="0.1" max="15" step="0.1" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Sodium level (mEq/L)</label>
+                            <input type="number" class="form-control" name="Sodium level (mEq/L)" min="100" max="160" step="1" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Potassium level (mEq/L)</label>
+                            <input type="number" class="form-control" name="Potassium level (mEq/L)" min="2" max="8" step="0.1" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Hemoglobin level (gms)</label>
+                            <input type="number" class="form-control" name="Hemoglobin level (gms)" min="5" max="20" step="0.1" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Packed cell volume (%)</label>
+                            <input type="number" class="form-control" name="Packed cell volume (%)" min="15" max="60" step="1" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">White blood cell count (cells/cumm)</label>
+                            <input type="number" class="form-control" name="White blood cell count (cells/cumm)" min="1000" max="50000" step="100" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Red blood cell count (millions/cumm)</label>
+                            <input type="number" class="form-control" name="Red blood cell count (millions/cumm)" min="1" max="8" step="0.1" required>
+                        </div>
+                    </div>
+
+                    <!-- Medical History -->
+                    <div class="section-header">Medical History</div>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Hypertension</label>
+                            <select class="form-control" name="Hypertension (yes/no)" required>
+                                <option value="">Select</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Diabetes mellitus</label>
+                            <select class="form-control" name="Diabetes mellitus (yes/no)" required>
+                                <option value="">Select</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Coronary artery disease</label>
+                            <select class="form-control" name="Coronary artery disease (yes/no)" required>
+                                <option value="">Select</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Family history of CKD</label>
+                            <select class="form-control" name="Family history of chronic kidney disease" required>
+                                <option value="">Select</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Smoking status</label>
+                            <select class="form-control" name="Smoking status" required>
+                                <option value="">Select</option>
+                                <option value="never">Never</option>
+                                <option value="former">Former</option>
+                                <option value="current">Current</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Physical activity level</label>
+                            <select class="form-control" name="Physical activity level" required>
+                                <option value="">Select</option>
+                                <option value="low">Low</option>
+                                <option value="moderate">Moderate</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Symptoms and Physical Findings -->
+                    <div class="section-header">Symptoms and Physical Findings</div>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Appetite</label>
+                            <select class="form-control" name="Appetite (good/poor)" required>
+                                <option value="">Select</option>
+                                <option value="good">Good</option>
+                                <option value="poor">Poor</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Pedal edema</label>
+                            <select class="form-control" name="Pedal edema (yes/no)" required>
+                                <option value="">Select</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Anemia</label>
+                            <select class="form-control" name="Anemia (yes/no)" required>
+                                <option value="">Select</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Kidney Function Tests -->
+                    <div class="section-header">Kidney Function Tests</div>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">eGFR</label>
+                            <input type="number" class="form-control" name="Estimated Glomerular Filtration Rate (eGFR)" min="0" max="150" step="1" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Urine protein-to-creatinine ratio</label>
+                            <input type="number" class="form-control" name="Urine protein-to-creatinine ratio" min="0" max="10" step="0.01" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Urine output (ml/day)</label>
+                            <input type="number" class="form-control" name="Urine output (ml/day)" min="100" max="5000" step="100" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Serum albumin level</label>
+                            <input type="number" class="form-control" name="Serum albumin level" min="1" max="6" step="0.1" required>
+                        </div>
+                    </div>
+
+                    <!-- Additional Blood Tests -->
+                    <div class="section-header">Additional Blood Tests</div>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Cholesterol level</label>
+                            <input type="number" class="form-control" name="Cholesterol level" min="100" max="500" step="1" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">PTH level</label>
+                            <input type="number" class="form-control" name="Parathyroid hormone (PTH) level" min="10" max="1000" step="1" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Serum calcium level</label>
+                            <input type="number" class="form-control" name="Serum calcium level" min="5" max="15" step="0.1" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Serum phosphate level</label>
+                            <input type="number" class="form-control" name="Serum phosphate level" min="1" max="10" step="0.1" required>
+                        </div>
+                    </div>
+
+                    <!-- Disease Duration -->
+                    <div class="section-header">Disease Duration</div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Duration of diabetes (years)</label>
+                            <input type="number" class="form-control" name="Duration of diabetes mellitus (years)" min="0" max="50" step="1" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Duration of hypertension (years)</label>
+                            <input type="number" class="form-control" name="Duration of hypertension (years)" min="0" max="50" step="1" required>
+                        </div>
+                    </div>
+
+                    <!-- Special Tests -->
+                    <div class="section-header">Special Tests</div>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Cystatin C level</label>
+                            <input type="number" class="form-control" name="Cystatin C level" min="0.1" max="5" step="0.01" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Urinary sediment microscopy</label>
+                            <select class="form-control" name="Urinary sediment microscopy results" required>
+                                <option value="">Select</option>
+                                <option value="normal">Normal</option>
+                                <option value="abnormal">Abnormal</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">CRP level</label>
+                            <input type="number" class="form-control" name="C-reactive protein (CRP) level" min="0" max="50" step="0.1" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">IL-6 level</label>
+                            <input type="number" class="form-control" name="Interleukin-6 (IL-6) level" min="0" max="50" step="0.1" required>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn-predict"><i class="fas fa-kidneys me-2"></i>Predict Risk</button>
+                        <button type="button" class="btn-reset ms-2" onclick="resetForm()"><i class="fas fa-redo me-2"></i>Reset</button>
+                    </div>
+                </form>
+                
+                <div id="loading" class="text-center mt-4" style="display: none;">
+                    <div class="spinner-border text-success" role="status"></div>
+                    <p class="mt-2">Analyzing your data...</p>
+                </div>
+                
+                <div id="resultCard" class="result-card" style="display: none;">
+                    <h4 class="mb-3"><i class="fas fa-chart-line me-2"></i>Prediction Results</h4>
+                    <div id="resultContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('kidneyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const patientData = {};
+            
+            // List of all 42 fields in the exact order
+            const fields = [
+                'Age of the patient',
+                'Blood pressure (mm/Hg)',
+                'Specific gravity of urine',
+                'Albumin in urine',
+                'Sugar in urine',
+                'Red blood cells in urine',
+                'Pus cells in urine',
+                'Pus cell clumps in urine',
+                'Bacteria in urine',
+                'Random blood glucose level (mg/dl)',
+                'Blood urea (mg/dl)',
+                'Serum creatinine (mg/dl)',
+                'Sodium level (mEq/L)',
+                'Potassium level (mEq/L)',
+                'Hemoglobin level (gms)',
+                'Packed cell volume (%)',
+                'White blood cell count (cells/cumm)',
+                'Red blood cell count (millions/cumm)',
+                'Hypertension (yes/no)',
+                'Diabetes mellitus (yes/no)',
+                'Coronary artery disease (yes/no)',
+                'Appetite (good/poor)',
+                'Pedal edema (yes/no)',
+                'Anemia (yes/no)',
+                'Estimated Glomerular Filtration Rate (eGFR)',
+                'Urine protein-to-creatinine ratio',
+                'Urine output (ml/day)',
+                'Serum albumin level',
+                'Cholesterol level',
+                'Parathyroid hormone (PTH) level',
+                'Serum calcium level',
+                'Serum phosphate level',
+                'Family history of chronic kidney disease',
+                'Smoking status',
+                'Body Mass Index (BMI)',
+                'Physical activity level',
+                'Duration of diabetes mellitus (years)',
+                'Duration of hypertension (years)',
+                'Cystatin C level',
+                'Urinary sediment microscopy results',
+                'C-reactive protein (CRP) level',
+                'Interleukin-6 (IL-6) level'
+            ];
+            
+            fields.forEach(field => {
+                const value = formData.get(field);
+                patientData[field] = value ? value.toString() : '0';
+            });
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultCard').style.display = 'none';
+            
+            try {
+                const response = await fetch('/predict/kidney', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({patient_data: patientData})
+                });
+                
+                const result = await response.json();
+                document.getElementById('loading').style.display = 'none';
+                
+                if (result.success) {
+                    let riskClass = 'success';
+                    if (result.risk_level === 'High') riskClass = 'danger';
+                    else if (result.risk_level === 'Moderate') riskClass = 'warning';
+                    
+                    document.getElementById('resultContent').innerHTML = `
+                        <div class="alert alert-${riskClass}">
+                            <h5 class="alert-heading">${result.prediction}</h5>
+                            <p><strong>Risk Level:</strong> <span class="badge bg-${riskClass}">${result.risk_level}</span></p>
+                            <p><strong>Confidence:</strong> ${result.confidence}</p>
+                            <hr>
+                            <p class="mb-0"><i class="fas fa-info-circle me-2"></i>${result.message}</p>
+                        </div>
+                    `;
+                    document.getElementById('resultCard').style.display = 'block';
+                    document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                alert('Error: ' + error);
+            }
+        });
+        
+        function resetForm() {
+            document.getElementById('kidneyForm').reset();
+            document.getElementById('resultCard').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.navbar {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    color: white !important;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.nav-link {
+    color: white !important;
+    font-size: 1.1rem;
+    margin: 0 10px;
+    transition: all 0.3s;
+}
+
+.nav-link:hover {
+    transform: translateY(-2px);
+}
+
+.nav-link.active {
+    font-weight: bold;
+    border-bottom: 2px solid white;
+}
+
+.hero-section {
+    text-align: center;
+    color: white;
+    padding: 100px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    margin: 30px auto;
+    max-width: 1200px;
+    backdrop-filter: blur(10px);
+}
+
+.hero-section h1 {
+    font-size: 3.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-section p {
+    font-size: 1.3rem;
+    opacity: 0.95;
+    margin-bottom: 30px;
+}
+
+.services-section {
+    padding: 80px 0;
+    background: white;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 50px;
+}
+
+.service-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.4s;
+    height: 100%;
+    cursor: pointer;
+}
+
+.service-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.service-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    color: white;
+    font-size: 2rem;
+}
+
+.service-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.service-card p {
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.service-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.badge {
+    padding: 8px 12px;
+    border-radius: 20px;
+}
+
+.btn-link {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-link:hover {
+    transform: translateX(5px);
+}
+
+.footer {
+    background: #333;
+    color: white;
+    padding: 50px 0 20px;
+}
+
+.footer h5 {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.footer p {
+    color: #aaa;
+}
+
+.footer ul li {
+    margin-bottom: 10px;
+}
+
+.footer ul li a {
+    color: #aaa;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer ul li a:hover {
+    color: white;
+}
+
+.footer hr {
+    border-color: #555;
+    margin: 30px 0 20px;
+}
+
+.predictor-card {
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    margin-bottom: 30px;
+}
+
+.predictor-card .card-header {
+    padding: 20px;
+    border: none;
+}
+
+.predictor-card .card-body {
+    padding: 30px;
+    background: white;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.form-control, .form-select {
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 10px;
+    transition: all 0.3s;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.btn-predict {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 40px;
+    border-radius: 25px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-predict:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+.btn-reset {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 12px 40px;
+    border-radius: 25px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.result-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin-top: 30px;
+    animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.symptom-item {
+    margin-bottom: 10px;
+}
+
+.symptom-item .form-check {
+    padding: 10px;
+    border-radius: 8px;
+    transition: background 0.3s;
+}
+
+.symptom-item .form-check:hover {
+    background: #f8f9fa;
+}
+
+.symptom-item .form-check-input:checked + .form-check-label {
+    color: #667eea;
+    font-weight: 600;
+}
+
+.search-box {
+    margin-bottom: 20px;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}

@@ -1,0 +1,57 @@
+# Python
+venv/
+env/
+ENV/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.python-version
+
+# Virtual Environment
+venv/
+env/
+myenv/
+
+# Datasets (LARGE FILES - DO NOT COMMIT!)
+datasets/
+notebooks/datasets/
+*.csv
+*.xlsx
+*.json
+*.db
+*.sqlite
+
+# Notebooks
+notebooks/
+*.ipynb
+.ipynb_checkpoints/
+
+# ML Models (already tracked in models/)
+*.pkl
+*.h5
+*.joblib
+!models/*.pkl  # Keep if you want to track models
+
+# Environment variables
+.env
+.flaskenv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+instance/
+
+# Git
+.gitattributes

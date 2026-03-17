@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health News</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+        .nav-link.active {
+            font-weight: bold;
+            border-bottom: 2px solid white;
+        }
+        .container {
+            max-width: 1400px;
+        }
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            border: none;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #4299e1, #667eea);
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+        .card-header h3 {
+            margin: 0;
+            font-weight: 600;
+        }
+        .card-body {
+            padding: 30px;
+            background: white;
+        }
+        .news-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            border-left: 5px solid #4299e1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .news-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .news-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .news-description {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+        .news-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            color: #888;
+            flex-wrap: wrap;
+        }
+        .news-source {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .news-date {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-read-more {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            align-self: flex-start;
+        }
+        .btn-read-more:hover {
+            background: #3182ce;
+            color: white;
+        }
+        .loading-spinner {
+            text-align: center;
+            padding: 50px;
+        }
+        .refresh-btn {
+            background: #48bb78;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .refresh-btn:hover {
+            background: #38a169;
+            color: white;
+        }
+        .no-image {
+            width: 100%;
+            height: 200px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/"><i class="fas fa-heartbeat me-2"></i>Health Predictor</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/heart">Heart</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/lung">Lung</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/diabetes">Diabetes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/kidney">Kidney</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/disease">Disease</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/hospitals">Hospitals</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/news">Health News</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0"><i class="fas fa-newspaper me-2"></i>Latest Health News</h3>
+                <p class="mb-0 mt-2">Stay updated with the latest healthcare and medical news</p>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <button class="refresh-btn" onclick="refreshNews()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh News
+                    </button>
+                </div>
+
+                <div class="row" id="newsContainer">
+                    <div class="col-12 text-center">
+                        <div class="loading-spinner">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="mt-2">Loading latest health news...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fetch health news on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchHealthNews();
+        });
+
+        async function fetchHealthNews() {
+            const newsContainer = document.getElementById('newsContainer');
+            
+            // Show loading spinner
+            newsContainer.innerHTML = `
+                <div class="col-12">
+                    <div class="loading-spinner">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-2">Loading latest health news...</p>
+                    </div>
+                </div>
+            `;
+
+            try {
+                // Using free NewsAPI endpoint for health news
+                const url = 'https://saurav.tech/NewsAPI/top-headlines/category/health/us.json';
+                
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.articles && data.articles.length > 0) {
+                    displayNews(data.articles);
+                } else {
+                    newsContainer.innerHTML = `
+                        <div class="col-12">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                No health news articles found. Please try again later.
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error fetching news:', error);
+                newsContainer.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Error loading health news. Please try again later.
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function displayNews(articles) {
+            const newsContainer = document.getElementById('newsContainer');
+            let html = '';
+
+            articles.forEach((article, index) => {
+                // Format date
+                const publishedDate = article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                }) : 'Date not available';
+
+                // Get image or show placeholder
+                const imageHtml = article.urlToImage 
+                    ? `<img src="${article.urlToImage}" class="news-image" alt="${article.title}" onerror="this.parentElement.innerHTML='<div class=\'no-image\'><i class=\'fas fa-image\'></i></div>'">`
+                    : `<div class="no-image"><i class="fas fa-image"></i></div>`;
+
+                html += `
+                    <div class="col-md-6 col-lg-4">
+                        <div class="news-card">
+                            ${imageHtml}
+                            <div class="news-meta">
+                                <span class="news-source">
+                                    <i class="fas fa-newspaper"></i> ${article.source?.name || 'Unknown Source'}
+                                </span>
+                                <span class="news-date">
+                                    <i class="far fa-calendar"></i> ${publishedDate}
+                                </span>
+                            </div>
+                            <h5 class="news-title">${article.title || 'No title available'}</h5>
+                            <p class="news-description">${article.description || article.content || 'No description available'}</p>
+                            <a href="${article.url}" target="_blank" class="btn-read-more">
+                                <i class="fas fa-external-link-alt me-2"></i>Read Full Article
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+
+            newsContainer.innerHTML = html;
+        }
+
+        function refreshNews() {
+            fetchHealthNews();
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
