@@ -188,6 +188,10 @@ def hospitals():
 def news():
     return render_template('news.html')
 
+@app.route('/tools')
+def tools():
+    return render_template('tools.html')
+
 if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 5000))

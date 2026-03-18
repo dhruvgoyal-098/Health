@@ -13,3 +13,4 @@ MarkupSafe==3.0.2
 click==8.2.1
 blinker==1.9.0
 threadpoolctl==3.6.0
+xgboost==1.7.6
