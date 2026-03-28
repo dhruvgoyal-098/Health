@@ -30,7 +30,8 @@
     <div class="hero">
         <div class="container hero-content">
             <h1>💧 Diabetes Risk Assessment</h1>
-            <p>Evaluate your risk of developing diabetes using 8 key health parameters. Early detection can help prevent complications.</p>
+            <p>Evaluate your risk of developing diabetes using 8 key health parameters. Early detection can help prevent
+                complications.</p>
         </div>
     </div>
 
@@ -54,7 +55,8 @@
                             </div>
                             <div class="form-group">
                                 <label>Age (years)</label>
-                                <input type="number" name="age" min="1" max="120" step="0.1" placeholder="Enter age" required>
+                                <input type="number" name="age" min="1" max="120" step="0.1" placeholder="Enter age"
+                                    required>
                             </div>
                             <div class="form-group">
                                 <label>Hypertension</label>
@@ -74,15 +76,18 @@
                             </div>
                             <div class="form-group">
                                 <label>BMI (Body Mass Index)</label>
-                                <input type="number" name="bmi" min="10" max="60" step="0.1" placeholder="Enter BMI (10-60)" required>
+                                <input type="number" name="bmi" min="10" max="60" step="0.1"
+                                    placeholder="Enter BMI (10-60)" required>
                             </div>
                             <div class="form-group">
                                 <label>HbA1c Level (%)</label>
-                                <input type="number" name="HbA1c_level" min="3" max="15" step="0.1" placeholder="Enter HbA1c level (3-15%)" required>
+                                <input type="number" name="HbA1c_level" min="3" max="15" step="0.1"
+                                    placeholder="Enter HbA1c level (3-15%)" required>
                             </div>
                             <div class="form-group">
                                 <label>Blood Glucose Level (mg/dL)</label>
-                                <input type="number" name="blood_glucose_level" min="50" max="300" placeholder="Enter blood glucose (50-300 mg/dL)" required>
+                                <input type="number" name="blood_glucose_level" min="50" max="300"
+                                    placeholder="Enter blood glucose (50-300 mg/dL)" required>
                             </div>
                             <div class="form-group">
                                 <label>Smoking History</label>
@@ -102,12 +107,12 @@
                             <button type="button" class="btn-reset" onclick="resetForm()">Reset Form</button>
                         </div>
                     </form>
-                    
+
                     <div id="loading" class="loading" style="display: none;">
                         <div class="spinner"></div>
                         <p>Analyzing your data...</p>
                     </div>
-                    
+
                     <div id="resultCard" class="result-card" style="display: none;">
                         <h4>📊 Prediction Results</h4>
                         <div id="resultContent"></div>
@@ -119,7 +124,8 @@
 
     <div class="disclaimer">
         <div class="container">
-            <p>⚠️ Our prediction model is trained on clinical datasets and should not replace professional medical advice. Always consult a doctor for accurate diagnosis.</p>
+            <p>⚠️ Our prediction model is trained on clinical datasets and should not replace professional medical
+                advice. Always consult a doctor for accurate diagnosis.</p>
         </div>
     </div>
 
@@ -155,7 +161,8 @@
             </div>
             <hr>
             <div class="copyright">
-                <p>© 2025 HealthAI Predictor — AI-powered health insights. All trademarks belong to their respective owners.</p>
+                <p>© 2025 HealthAI Predictor — AI-powered health insights. All trademarks belong to their respective
+                    owners.</p>
             </div>
         </div>
     </footer>
@@ -163,20 +170,21 @@
     <script>
         document.getElementById('diabetesForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const formData = new FormData(e.target);
             const smokingMap = {
-                'current': [1,0,0,0,0],
-                'ever': [0,1,0,0,0],
-                'former': [0,0,1,0,0],
-                'never': [0,0,0,1,0],
-                'not current': [0,0,0,0,1],
-                'No Info': [0,0,0,0,0]
+                'current': [1, 0, 0, 0, 0],
+                'ever': [0, 1, 0, 0, 0],
+                'former': [0, 0, 1, 0, 0],
+                'never': [0, 0, 0, 1, 0],
+                'not current': [0, 0, 0, 0, 1],
+                'No Info': [0, 0, 0, 0, 0]
             };
-            
+
             const smoking = formData.get('smoking_history');
-            const smokingEncoded = smokingMap[smoking] || [0,0,0,0,0];
-            
+            const smokingEncoded = smokingMap[smoking] || [0, 0, 0, 0, 0];
+
+            // Create patient data object matching your model's expected features
             const patientData = {
                 'gender': parseInt(formData.get('gender')),
                 'age': parseFloat(formData.get('age')),
@@ -191,49 +199,73 @@
                 'smoking_history_never': smokingEncoded[3],
                 'smoking_history_not current': smokingEncoded[4]
             };
-            
+
+            // Validate all required fields are filled
+            const requiredFields = ['gender', 'age', 'hypertension', 'heart_disease', 'bmi', 'HbA1c_level', 'blood_glucose_level'];
+            let isValid = true;
+            for (let field of requiredFields) {
+                if (!formData.get(field)) {
+                    isValid = false;
+                    alert(`Please fill in ${field.replace('_', ' ')}`);
+                    break;
+                }
+            }
+
+            if (!isValid) return;
+
             document.getElementById('loading').style.display = 'block';
             document.getElementById('resultCard').style.display = 'none';
-            
+
             try {
                 const response = await fetch('/predict/diabetes', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({patient_data: patientData})
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ patient_data: patientData })
                 });
-                
+
+                // Check if response is OK
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Server error response:', errorText);
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
                 const result = await response.json();
+                console.log('Prediction result:', result);
+
                 document.getElementById('loading').style.display = 'none';
-                
+
                 if (result.success) {
+                    // Set color based on risk level
+                    let riskColor = '';
+                    if (result.risk_level === 'High') riskColor = '#dc3545';
+                    else if (result.risk_level === 'Moderate') riskColor = '#fd7e14';
+                    else riskColor = '#28a745';
+
                     document.getElementById('resultContent').innerHTML = `
-                        <div class="result-box">
-                            <h5>🎯 Prediction Result:</h5>
-                            <p class="result-value">${result.prediction}</p>
-                            <hr>
-                            <h6>⚠️ Risk Level:</h6>
-                            <p class="risk-value">${result.risk_level}</p>
-                            <h6>📈 Confidence:</h6>
-                            <p class="confidence-value">${result.confidence}</p>
-                            <hr>
-                            <p class="message"><small>${result.message}</small></p>
-                        </div>
-                    `;
+                <div class="result-box">
+                    <h5>🎯 Prediction Result:</h5>
+                    <p class="result-value">${result.prediction}</p>
+                    <hr>
+                    <h6>⚠️ Risk Level:</h6>
+                    <p class="risk-value" style="color: ${riskColor}; font-weight: bold;">${result.risk_level}</p>
+                    <h6>📈 Confidence:</h6>
+                    <p class="confidence-value">${result.confidence}</p>
+                    <hr>
+                    <p class="message"><small>${result.message}</small></p>
+                </div>
+            `;
                     document.getElementById('resultCard').style.display = 'block';
                     document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
                 } else {
-                    alert('Error: ' + result.error);
+                    alert('Error: ' + (result.error || 'Unknown error occurred'));
                 }
             } catch (error) {
+                console.error('Fetch error:', error);
                 document.getElementById('loading').style.display = 'none';
-                alert('Error: ' + error);
+                alert('Error connecting to server. Please make sure the Flask server is running.\n\n' + error.message);
             }
         });
-        
-        function resetForm() {
-            document.getElementById('diabetesForm').reset();
-            document.getElementById('resultCard').style.display = 'none';
-        }
     </script>
 </body>
 
