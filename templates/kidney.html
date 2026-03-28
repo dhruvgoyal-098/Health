@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Kidney Disease Predictor | HealthAI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='kidney.css') }}">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo"> HealthAI </a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/heart">Heart</a></li>
+                <li><a href="/lung">Lung</a></li>
+                <li><a href="/diabetes">Diabetes</a></li>
+                <li><a href="/kidney" class="active">Kidney</a></li>
+                <li><a href="/disease">Disease</a></li>
+                <li><a href="/hospitals">Hospitals</a></li>
+                <li><a href="/news">News</a></li>
+                <li><a href="/tools">Tools</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="container hero-content">
+            <h1>🧬 Kidney Disease Risk Assessment</h1>
+            <p>Comprehensive evaluation using 42 clinical parameters. Early detection can help prevent kidney failure.</p>
+        </div>
+    </div>
+
+    <section class="prediction-section">
+        <div class="container">
+            <div class="prediction-card">
+                <div class="card-header">
+                    <h3>Clinical Parameters</h3>
+                    <p>Please fill in all 42 parameters for accurate prediction</p>
+                </div>
+                <div class="card-body">
+                    <form id="kidneyForm">
+                        <!-- Basic Demographics -->
+                        <div class="section-header">
+                            <span>👤 Basic Demographics</span>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Age of the patient (years)</label>
+                                <input type="number" name="Age of the patient" min="0" max="120" step="1" placeholder="Enter age" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Blood pressure (mm/Hg)</label>
+                                <input type="number" name="Blood pressure (mm/Hg)" min="80" max="250" step="1" placeholder="Enter BP" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Body Mass Index (BMI)</label>
+                                <input type="number" name="Body Mass Index (BMI)" min="10" max="60" step="0.1" placeholder="Enter BMI" required>
+                            </div>
+                        </div>
+
+                        <!-- Urine Analysis - Basic -->
+                        <div class="section-header">
+                            <span>💧 Urine Analysis - Basic</span>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Specific gravity of urine</label>
+                                <input type="number" name="Specific gravity of urine" min="1.001" max="1.035" step="0.001" placeholder="Enter specific gravity" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Albumin in urine (0-5)</label>
+                                <input type="number" name="Albumin in urine" min="0" max="5" step="1" placeholder="Enter albumin level" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Sugar in urine (0-5)</label>
+                                <input type="number" name="Sugar in urine" min="0" max="5" step="1" placeholder="Enter sugar level" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Red blood cells in urine</label>
+                                <select name="Red blood cells in urine" required>
+                                    <option value="">Select</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="abnormal">Abnormal</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Pus cells in urine</label>
+                                <select name="Pus cells in urine" required>
+                                    <option value="">Select</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="abnormal">Abnormal</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Pus cell clumps in urine</label>
+                                <select name="Pus cell clumps in urine" required>
+                                    <option value="">Select</option>
+                                    <option value="not present">Not Present</option>
+                                    <option value="present">Present</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Bacteria in urine</label>
+                                <select name="Bacteria in urine" required>
+                                    <option value="">Select</option>
+                                    <option value="not present">Not Present</option>
+                                    <option value="present">Present</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Blood Tests - Basic -->
+                        <div class="section-header">
+                            <span>🩸 Blood Tests - Basic</span>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Random blood glucose (mg/dl)</label>
+                                <input type="number" name="Random blood glucose level (mg/dl)" min="50" max="500" step="1" placeholder="Enter glucose" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Blood urea (mg/dl)</label>
+                                <input type="number" name="Blood urea (mg/dl)" min="1" max="300" step="1" placeholder="Enter urea" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Serum creatinine (mg/dl)</label>
+                                <input type="number" name="Serum creatinine (mg/dl)" min="0.1" max="15" step="0.1" placeholder="Enter creatinine" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Sodium level (mEq/L)</label>
+                                <input type="number" name="Sodium level (mEq/L)" min="100" max="160" step="1" placeholder="Enter sodium" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Potassium level (mEq/L)</label>
+                                <input type="number" name="Potassium level (mEq/L)" min="2" max="8" step="0.1" placeholder="Enter potassium" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Hemoglobin level (gms)</label>
+                                <input type="number" name="Hemoglobin level (gms)" min="5" max="20" step="0.1" placeholder="Enter hemoglobin" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Packed cell volume (%)</label>
+                                <input type="number" name="Packed cell volume (%)" min="15" max="60" step="1" placeholder="Enter PCV" required>
+                            </div>
+                            <div class="form-group">
+                                <label>White blood cell count (cells/cumm)</label>
+                                <input type="number" name="White blood cell count (cells/cumm)" min="1000" max="50000" step="100" placeholder="Enter WBC" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Red blood cell count (millions/cumm)</label>
+                                <input type="number" name="Red blood cell count (millions/cumm)" min="1" max="8" step="0.1" placeholder="Enter RBC" required>
+                            </div>
+                        </div>
+
+                        <!-- Medical History -->
+                        <div class="section-header">
+                            <span>📋 Medical History</span>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Hypertension</label>
+                                <select name="Hypertension (yes/no)" required>
+                                    <option value="">Select</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Diabetes mellitus</label>
+                                <select name="Diabetes mellitus (yes/no)" required>
+                                    <option value="">Select</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Coronary artery disease</label>
+                                <select name="Coronary artery disease (yes/no)" required>
+                                    <option value="">Select</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Family history of CKD</label>
+                                <select name="Family history of chronic kidney disease" required>
+                                    <option value="">Select</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Smoking status</label>
+                                <select name="Smoking status" required>
+                                    <option value="">Select</option>
+                                    <option value="never">Never</option>
+                                    <option value="former">Former</option>
+                                    <option value="current">Current</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Physical activity level</label>
+                                <select name="Physical activity level" required>
+                                    <option value="">Select</option>
+                                    <option value="low">Low</option>
+                                    <option value="moderate">Moderate</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Symptoms and Physical Findings -->
+                        <div class="section-header">
+                            <span>🤒 Symptoms and Physical Findings</span>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Appetite</label>
+                                <select name="Appetite (good/poor)" required>
+                                    <option value="">Select</option>
+                                    <option value="good">Good</option>
+                                    <option value="poor">Poor</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Pedal edema</label>
+                                <select name="Pedal edema (yes/no)" required>
+                                    <option value="">Select</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Anemia</label>
+                                <select name="Anemia (yes/no)" required>
+                                    <option value="">Select</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Kidney Function Tests -->
+                        <div class="section-header">
+                            <span>🧪 Kidney Function Tests</span>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>eGFR</label>
+                                <input type="number" name="Estimated Glomerular Filtration Rate (eGFR)" min="0" max="150" step="1" placeholder="Enter eGFR" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Urine protein-to-creatinine ratio</label>
+                                <input type="number" name="Urine protein-to-creatinine ratio" min="0" max="10" step="0.01" placeholder="Enter ratio" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Urine output (ml/day)</label>
+                                <input type="number" name="Urine output (ml/day)" min="100" max="5000" step="100" placeholder="Enter output" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Serum albumin level</label>
+                                <input type="number" name="Serum albumin level" min="1" max="6" step="0.1" placeholder="Enter albumin" required>
+                            </div>
+                        </div>
+
+                        <!-- Additional Blood Tests -->
+                        <div class="section-header">
+                            <span>🔬 Additional Blood Tests</span>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Cholesterol level</label>
+                                <input type="number" name="Cholesterol level" min="100" max="500" step="1" placeholder="Enter cholesterol" required>
+                            </div>
+                            <div class="form-group">
+                                <label>PTH level</label>
+                                <input type="number" name="Parathyroid hormone (PTH) level" min="10" max="1000" step="1" placeholder="Enter PTH" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Serum calcium level</label>
+                                <input type="number" name="Serum calcium level" min="5" max="15" step="0.1" placeholder="Enter calcium" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Serum phosphate level</label>
+                                <input type="number" name="Serum phosphate level" min="1" max="10" step="0.1" placeholder="Enter phosphate" required>
+                            </div>
+                        </div>
+
+                        <!-- Disease Duration -->
+                        <div class="section-header">
+                            <span>⏱️ Disease Duration</span>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Duration of diabetes (years)</label>
+                                <input type="number" name="Duration of diabetes mellitus (years)" min="0" max="50" step="1" placeholder="Enter duration" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Duration of hypertension (years)</label>
+                                <input type="number" name="Duration of hypertension (years)" min="0" max="50" step="1" placeholder="Enter duration" required>
+                            </div>
+                        </div>
+
+                        <!-- Special Tests -->
+                        <div class="section-header">
+                            <span>🔍 Special Tests</span>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Cystatin C level</label>
+                                <input type="number" name="Cystatin C level" min="0.1" max="5" step="0.01" placeholder="Enter cystatin C" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Urinary sediment microscopy</label>
+                                <select name="Urinary sediment microscopy results" required>
+                                    <option value="">Select</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="abnormal">Abnormal</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>CRP level</label>
+                                <input type="number" name="C-reactive protein (CRP) level" min="0" max="50" step="0.1" placeholder="Enter CRP" required>
+                            </div>
+                            <div class="form-group">
+                                <label>IL-6 level</label>
+                                <input type="number" name="Interleukin-6 (IL-6) level" min="0" max="50" step="0.1" placeholder="Enter IL-6" required>
+                            </div>
+                        </div>
+
+                        <div class="button-group">
+                            <button type="submit" class="btn-predict">Predict Risk</button>
+                            <button type="button" class="btn-reset" onclick="resetForm()">Reset Form</button>
+                        </div>
+                    </form>
+                    
+                    <div id="loading" class="loading" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>Analyzing your data...</p>
+                    </div>
+                    
+                    <div id="resultCard" class="result-card" style="display: none;">
+                        <h4>📊 Prediction Results</h4>
+                        <div id="resultContent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="disclaimer">
+        <div class="container">
+            <p>⚠️ Our prediction model is trained on clinical datasets and should not replace professional medical advice. Always consult a doctor for accurate diagnosis.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>HealthAI Predictor</h4>
+                    <p>Democratizing early disease detection through artificial intelligence and medical research.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Access</h4>
+                    <ul>
+                        <li><a href="/heart">Heart Disease</a></li>
+                        <li><a href="/lung">Lung Cancer</a></li>
+                        <li><a href="/diabetes">Diabetes</a></li>
+                        <li><a href="/kidney">Kidney Disease</a></li>
+                        <li><a href="/disease">Symptom Checker</a></li>
+                        <li><a href="/tools">Health Tools</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="/hospitals">Find Hospitals</a></li>
+                        <li><a href="/news">Health News</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <p>📧 support@healthai.com</p>
+                </div>
+            </div>
+            <hr>
+            <div class="copyright">
+                <p>© 2025 HealthAI Predictor — AI-powered health insights. All trademarks belong to their respective owners.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('kidneyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const patientData = {};
+            
+            const fields = [
+                'Age of the patient',
+                'Blood pressure (mm/Hg)',
+                'Specific gravity of urine',
+                'Albumin in urine',
+                'Sugar in urine',
+                'Red blood cells in urine',
+                'Pus cells in urine',
+                'Pus cell clumps in urine',
+                'Bacteria in urine',
+                'Random blood glucose level (mg/dl)',
+                'Blood urea (mg/dl)',
+                'Serum creatinine (mg/dl)',
+                'Sodium level (mEq/L)',
+                'Potassium level (mEq/L)',
+                'Hemoglobin level (gms)',
+                'Packed cell volume (%)',
+                'White blood cell count (cells/cumm)',
+                'Red blood cell count (millions/cumm)',
+                'Hypertension (yes/no)',
+                'Diabetes mellitus (yes/no)',
+                'Coronary artery disease (yes/no)',
+                'Appetite (good/poor)',
+                'Pedal edema (yes/no)',
+                'Anemia (yes/no)',
+                'Estimated Glomerular Filtration Rate (eGFR)',
+                'Urine protein-to-creatinine ratio',
+                'Urine output (ml/day)',
+                'Serum albumin level',
+                'Cholesterol level',
+                'Parathyroid hormone (PTH) level',
+                'Serum calcium level',
+                'Serum phosphate level',
+                'Family history of chronic kidney disease',
+                'Smoking status',
+                'Body Mass Index (BMI)',
+                'Physical activity level',
+                'Duration of diabetes mellitus (years)',
+                'Duration of hypertension (years)',
+                'Cystatin C level',
+                'Urinary sediment microscopy results',
+                'C-reactive protein (CRP) level',
+                'Interleukin-6 (IL-6) level'
+            ];
+            
+            fields.forEach(field => {
+                const value = formData.get(field);
+                patientData[field] = value ? value.toString() : '0';
+            });
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultCard').style.display = 'none';
+            
+            try {
+                const response = await fetch('/predict/kidney', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({patient_data: patientData})
+                });
+                
+                const result = await response.json();
+                document.getElementById('loading').style.display = 'none';
+                
+                if (result.success) {
+                    let riskColor = '';
+                    if (result.risk_level === 'High') riskColor = '#dc3545';
+                    else if (result.risk_level === 'Moderate') riskColor = '#fd7e14';
+                    else riskColor = '#28a745';
+                    
+                    document.getElementById('resultContent').innerHTML = `
+                        <div class="result-box">
+                            <h5>🎯 Prediction Result:</h5>
+                            <p class="result-value">${result.prediction}</p>
+                            <hr>
+                            <h6>⚠️ Risk Level:</h6>
+                            <p class="risk-value" style="color: ${riskColor}; font-weight: bold;">${result.risk_level}</p>
+                            <h6>📈 Confidence:</h6>
+                            <p class="confidence-value">${result.confidence}</p>
+                            <hr>
+                            <p class="message"><small>${result.message}</small></p>
+                        </div>
+                    `;
+                    document.getElementById('resultCard').style.display = 'block';
+                    document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                alert('Error: ' + error.message);
+            }
+        });
+        
+        function resetForm() {
+            document.getElementById('kidneyForm').reset();
+            document.getElementById('resultCard').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Nearby Hospitals | HealthAI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='hospitals.css') }}">
+    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+    <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo"> HealthAI </a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/heart">Heart</a></li>
+                <li><a href="/lung">Lung</a></li>
+                <li><a href="/diabetes">Diabetes</a></li>
+                <li><a href="/kidney">Kidney</a></li>
+                <li><a href="/disease">Disease</a></li>
+                <li><a href="/hospitals" class="active">Hospitals</a></li>
+                <li><a href="/news">News</a></li>
+                <li><a href="/tools">Tools</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="container hero-content">
+            <h1>🏥 Nearby Hospitals</h1>
+            <p>Find hospitals and healthcare facilities near your location. Get directions and contact information instantly.</p>
+        </div>
+    </div>
+
+    <section class="hospitals-section">
+        <div class="container">
+            <div class="hospitals-card">
+                <div class="card-header">
+                    <h3>Healthcare Facilities Locator</h3>
+                    <p>Powered by OpenStreetMap data</p>
+                </div>
+                <div class="card-body">
+                    <div class="location-controls">
+                        <button class="btn-locate" onclick="getUserLocation()">
+                            📍 Find Hospitals Near Me
+                        </button>
+                    </div>
+                    
+                    <div id="map" class="map-container"></div>
+                    
+                    <div id="hospitalsList" class="hospitals-grid">
+                        <div class="placeholder-message">
+                            <div class="placeholder-icon">🏥</div>
+                            <p>Click the button above to find nearby hospitals</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="disclaimer">
+        <div class="container">
+            <p>⚠️ Hospital data is provided by OpenStreetMap. Accuracy may vary. Please verify contact information before visiting.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>HealthAI Predictor</h4>
+                    <p>Democratizing early disease detection through artificial intelligence and medical research.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Access</h4>
+                    <ul>
+                        <li><a href="/heart">Heart Disease</a></li>
+                        <li><a href="/lung">Lung Cancer</a></li>
+                        <li><a href="/diabetes">Diabetes</a></li>
+                        <li><a href="/kidney">Kidney Disease</a></li>
+                        <li><a href="/disease">Symptom Checker</a></li>
+                        <li><a href="/tools">Health Tools</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="/hospitals">Find Hospitals</a></li>
+                        <li><a href="/news">Health News</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <p>📧 support@healthai.com</p>
+                </div>
+            </div>
+            <hr>
+            <div class="copyright">
+                <p>© 2025 HealthAI Predictor — AI-powered health insights. All trademarks belong to their respective owners.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let map;
+        let markers = [];
+        let userLocation = null;
+
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                document.getElementById('hospitalsList').innerHTML = `
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Getting your location...</p>
+                    </div>
+                `;
+                
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        initMap();
+                        findNearbyHospitals();
+                    },
+                    (error) => {
+                        document.getElementById('hospitalsList').innerHTML = `
+                            <div class="error-message">
+                                <div class="error-icon">⚠️</div>
+                                <p>Error getting your location: ${error.message}</p>
+                                <small>Please enable location services and try again.</small>
+                            </div>
+                        `;
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by your browser');
+            }
+        }
+
+        function initMap() {
+            map = new maplibregl.Map({
+                container: 'map',
+                style: 'https://tiles.openfreemap.org/styles/liberty',
+                center: [userLocation.lng, userLocation.lat],
+                zoom: 14
+            });
+
+            map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+            // Add user location marker
+            const userMarkerEl = document.createElement('div');
+            userMarkerEl.className = 'user-marker';
+            userMarkerEl.style.background = '#00b09b';
+            userMarkerEl.style.border = '3px solid white';
+            userMarkerEl.style.borderRadius = '50%';
+            userMarkerEl.style.width = '20px';
+            userMarkerEl.style.height = '20px';
+            userMarkerEl.style.boxShadow = '0 0 10px rgba(0,176,155,0.5)';
+            
+            new maplibregl.Marker({ element: userMarkerEl })
+                .setLngLat([userLocation.lng, userLocation.lat])
+                .setPopup(new maplibregl.Popup().setHTML('<h6>📍 Your Location</h6><p>You are here</p>'))
+                .addTo(map);
+        }
+
+        async function findNearbyHospitals() {
+            document.getElementById('hospitalsList').innerHTML = `
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Searching for nearby hospitals...</p>
+                </div>
+            `;
+
+            try {
+                const radius = 5000;
+                const query = `
+                    [out:json];
+                    (
+                        node["amenity"="hospital"](around:${radius},${userLocation.lat},${userLocation.lng});
+                        way["amenity"="hospital"](around:${radius},${userLocation.lat},${userLocation.lng});
+                    );
+                    out body;
+                `;
+
+                const response = await fetch('https://overpass-api.de/api/interpreter', {
+                    method: 'POST',
+                    body: query
+                });
+
+                const data = await response.json();
+                
+                if (data.elements && data.elements.length > 0) {
+                    displayHospitals(data.elements);
+                    addHospitalMarkers(data.elements);
+                } else {
+                    document.getElementById('hospitalsList').innerHTML = `
+                        <div class="no-results">
+                            <div class="no-results-icon">🏥</div>
+                            <p>No hospitals found nearby</p>
+                            <small>Try expanding your search area</small>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error fetching hospitals:', error);
+                document.getElementById('hospitalsList').innerHTML = `
+                    <div class="error-message">
+                        <div class="error-icon">⚠️</div>
+                        <p>Error finding hospitals. Please try again.</p>
+                        <small>${error.message}</small>
+                    </div>
+                `;
+            }
+        }
+
+        function addHospitalMarkers(hospitals) {
+            markers.forEach(marker => marker.remove());
+            markers = [];
+
+            hospitals.forEach((hospital, index) => {
+                if (hospital.lat && hospital.lon) {
+                    const el = document.createElement('div');
+                    el.className = 'hospital-marker';
+                    el.textContent = (index + 1).toString();
+                    
+                    new maplibregl.Marker({ element: el })
+                        .setLngLat([hospital.lon, hospital.lat])
+                        .setPopup(new maplibregl.Popup().setHTML(`
+                            <div class="popup-content">
+                                <h6>${hospital.tags?.name || 'Hospital'}</h6>
+                                <p>${hospital.tags?.['addr:street'] || 'Address not available'}</p>
+                                ${hospital.tags?.phone ? `<p>📞 ${hospital.tags.phone}</p>` : ''}
+                            </div>
+                        `))
+                        .addTo(map);
+                }
+            });
+        }
+
+        function displayHospitals(hospitals) {
+            const validHospitals = hospitals.filter(h => h.lat && h.lon);
+            
+            validHospitals.sort((a, b) => {
+                const distA = getDistanceFromLatLonInKm(
+                    userLocation.lat, userLocation.lng,
+                    a.lat, a.lon
+                );
+                const distB = getDistanceFromLatLonInKm(
+                    userLocation.lat, userLocation.lng,
+                    b.lat, b.lon
+                );
+                return distA - distB;
+            });
+
+            let html = '<div class="hospitals-grid-title"><h3>Nearby Hospitals</h3><p>Click on markers for more details</p></div>';
+            html+='<div></div>'
+            validHospitals.slice(0, 10).forEach((hospital, index) => {
+                const distance = getDistanceFromLatLonInKm(
+                    userLocation.lat, userLocation.lng,
+                    hospital.lat, hospital.lon
+                );
+                
+                const mapsUrl = `https://www.openstreetmap.org/directions?engine=graphhopper_foot&route=${userLocation.lat},${userLocation.lng};${hospital.lat},${hospital.lon}`;
+                
+                html += `
+                    <div class="hospital-card">
+                        <div class="hospital-header">
+                            <h5 class="hospital-name">${index + 1}. ${hospital.tags?.name || 'Unnamed Hospital'}</h5>
+                            <span class="distance-badge">${distance.toFixed(1)} km</span>
+                        </div>
+                        <p class="hospital-address">
+                            📍 ${hospital.tags?.['addr:street'] || hospital.tags?.['addr:full'] || 'Address not available'}
+                        </p>
+                        ${hospital.tags?.phone ? `
+                            <div class="hospital-contact">
+                                📞 ${hospital.tags.phone}
+                            </div>
+                        ` : ''}
+                        ${hospital.tags?.website ? `
+                            <div class="hospital-contact">
+                                🌐 <a href="${hospital.tags.website}" target="_blank" class="hospital-link">Visit Website</a>
+                            </div>
+                        ` : ''}
+                        <div class="hospital-actions">
+                            <a href="${mapsUrl}" target="_blank" class="btn-directions">
+                                🗺️ Get Directions
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (validHospitals.length === 0) {
+                html = '<div class="no-results"><p>No hospitals found in this area</p></div>';
+            }
+
+            document.getElementById('hospitalsList').innerHTML = html;
+        }
+
+        function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = deg2rad(lat2 - lat1);
+            const dLon = deg2rad(lon2 - lon1);
+            const a = 
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI / 180);
+        }
+    </script>
+</body>
+
+</html>

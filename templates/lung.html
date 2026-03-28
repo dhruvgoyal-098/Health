@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Lung Cancer Predictor | HealthAI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='lung.css') }}">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo"> HealthAI </a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/heart">Heart</a></li>
+                <li><a href="/lung" class="active">Lung</a></li>
+                <li><a href="/diabetes">Diabetes</a></li>
+                <li><a href="/kidney">Kidney</a></li>
+                <li><a href="/disease">Disease</a></li>
+                <li><a href="/hospitals">Hospitals</a></li>
+                <li><a href="/news">News</a></li>
+                <li><a href="/tools">Tools</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="container hero-content">
+            <h1>🫁 Lung Cancer Risk Assessment</h1>
+            <p>Evaluate your risk of lung cancer based on 9 key lifestyle and symptom factors. Early detection saves lives.</p>
+        </div>
+    </div>
+
+    <section class="prediction-section">
+        <div class="container">
+            <div class="prediction-card">
+                <div class="card-header">
+                    <h3>Health & Lifestyle Factors</h3>
+                    <p>Please answer all 9 questions (Yes = 1, No = 0)</p>
+                </div>
+                <div class="card-body">
+                    <form id="lungForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>SMOKING</label>
+                                <select name="SMOKING" required>
+                                    <option value="">Select</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                                <small>Do you currently smoke or have a history of smoking?</small>
+                            </div>
+                            <div class="form-group">
+                                <label>YELLOW_FINGERS</label>
+                                <select name="YELLOW_FINGERS" required>
+                                    <option value="">Select</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                                <small>Do you have yellow discoloration of fingers?</small>
+                            </div>
+                            <div class="form-group">
+                                <label>FATIGUE</label>
+                                <select name="FATIGUE" required>
+                                    <option value="">Select</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                                <small>Do you experience persistent tiredness?</small>
+                            </div>
+                            <div class="form-group">
+                                <label>ALLERGY</label>
+                                <select name="ALLERGY" required>
+                                    <option value="">Select</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                                <small>Do you suffer from any allergies?</small>
+                            </div>
+                            <div class="form-group">
+                                <label>WHEEZING</label>
+                                <select name="WHEEZING" required>
+                                    <option value="">Select</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                                <small>Do you experience wheezing sounds while breathing?</small>
+                            </div>
+                            <div class="form-group">
+                                <label>COUGHING</label>
+                                <select name="COUGHING" required>
+                                    <option value="">Select</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                                <small>Do you have persistent coughing?</small>
+                            </div>
+                            <div class="form-group">
+                                <label>SHORTNESS_OF_BREATH</label>
+                                <select name="SHORTNESS_OF_BREATH" required>
+                                    <option value="">Select</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                                <small>Do you experience difficulty breathing?</small>
+                            </div>
+                            <div class="form-group">
+                                <label>SWALLOWING_DIFFICULTY</label>
+                                <select name="SWALLOWING_DIFFICULTY" required>
+                                    <option value="">Select</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                                <small>Do you have trouble swallowing food?</small>
+                            </div>
+                            <div class="form-group">
+                                <label>CHEST_PAIN</label>
+                                <select name="CHEST_PAIN" required>
+                                    <option value="">Select</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                                <small>Do you experience chest pain or discomfort?</small>
+                            </div>
+                        </div>
+                        <div class="button-group">
+                            <button type="submit" class="btn-predict">Predict Risk</button>
+                            <button type="button" class="btn-reset" onclick="resetForm()">Reset Form</button>
+                        </div>
+                    </form>
+                    
+                    <div id="loading" class="loading" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>Analyzing your data...</p>
+                    </div>
+                    
+                    <div id="resultCard" class="result-card" style="display: none;">
+                        <h4>📊 Prediction Results</h4>
+                        <div id="resultContent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="disclaimer">
+        <div class="container">
+            <p>⚠️ Our prediction model is trained on clinical datasets and should not replace professional medical advice. Always consult a doctor for accurate diagnosis.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>HealthAI Predictor</h4>
+                    <p>Democratizing early disease detection through artificial intelligence and medical research.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Access</h4>
+                    <ul>
+                        <li><a href="/heart">Heart Disease</a></li>
+                        <li><a href="/lung">Lung Cancer</a></li>
+                        <li><a href="/diabetes">Diabetes</a></li>
+                        <li><a href="/kidney">Kidney Disease</a></li>
+                        <li><a href="/disease">Symptom Checker</a></li>
+                        <li><a href="/tools">Health Tools</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="/hospitals">Find Hospitals</a></li>
+                        <li><a href="/news">Health News</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <p>📧 support@healthai.com</p>
+                </div>
+            </div>
+            <hr>
+            <div class="copyright">
+                <p>© 2025 HealthAI Predictor — AI-powered health insights. All trademarks belong to their respective owners.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('lungForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const patientData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                patientData[key] = parseInt(value);
+            }
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultCard').style.display = 'none';
+            
+            try {
+                const response = await fetch('/predict/lung', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({patient_data: patientData})
+                });
+                
+                const result = await response.json();
+                document.getElementById('loading').style.display = 'none';
+                
+                if (result.success) {
+                    let riskColor = '';
+                    if (result.risk_level === 'High') riskColor = '#dc3545';
+                    else if (result.risk_level === 'Moderate') riskColor = '#fd7e14';
+                    else riskColor = '#28a745';
+                    
+                    document.getElementById('resultContent').innerHTML = `
+                        <div class="result-box">
+                            <h5>🎯 Prediction Result:</h5>
+                            <p class="result-value">${result.prediction}</p>
+                            <hr>
+                            <h6>⚠️ Risk Level:</h6>
+                            <p class="risk-value" style="color: ${riskColor}; font-weight: bold;">${result.risk_level}</p>
+                            <h6>📈 Confidence:</h6>
+                            <p class="confidence-value">${result.confidence}</p>
+                            <hr>
+                            <p class="message"><small>${result.message}</small></p>
+                        </div>
+                    `;
+                    document.getElementById('resultCard').style.display = 'block';
+                    document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                alert('Error: ' + error.message);
+            }
+        });
+        
+        function resetForm() {
+            document.getElementById('lungForm').reset();
+            document.getElementById('resultCard').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

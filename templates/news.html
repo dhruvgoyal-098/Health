@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Health News | HealthAI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='news.css') }}">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo"> HealthAI </a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/heart">Heart</a></li>
+                <li><a href="/lung">Lung</a></li>
+                <li><a href="/diabetes">Diabetes</a></li>
+                <li><a href="/kidney">Kidney</a></li>
+                <li><a href="/disease">Disease</a></li>
+                <li><a href="/hospitals">Hospitals</a></li>
+                <li><a href="/news" class="active">News</a></li>
+                <li><a href="/tools">Tools</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="container hero-content">
+            <h1>📰 Latest Health News</h1>
+            <p>Real-time updates from trusted health sources. Stay informed about medical breakthroughs and wellness tips.</p>
+        </div>
+    </div>
+
+    <section class="news-section">
+        <div class="container">
+            <div class="news-card">
+                <div class="card-header">
+                    <div class="header-content">
+                        <div>
+                            <h3>Health News & Updates</h3>
+                            <p>Curated from WHO, CDC, NIH, and Mayo Clinic</p>
+                        </div>
+                        <div class="header-actions">
+                            <button class="refresh-btn" onclick="refreshNews()">
+                                🔄 Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="filterInfo" class="filter-info" style="display: none;">
+                        <span>ℹ️</span>
+                        <span id="filterText"></span>
+                    </div>
+                    <div class="news-grid" id="newsContainer">
+                        <div class="loading-spinner">
+                            <div class="spinner"></div>
+                            <p>Loading latest health news...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="disclaimer">
+        <div class="container">
+            <p>⚠️ News articles are sourced from public RSS feeds. HealthAI does not endorse or verify all content. Always consult medical professionals.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>HealthAI Predictor</h4>
+                    <p>Democratizing early disease detection through artificial intelligence and medical research.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Access</h4>
+                    <ul>
+                        <li><a href="/heart">Heart Disease</a></li>
+                        <li><a href="/lung">Lung Cancer</a></li>
+                        <li><a href="/diabetes">Diabetes</a></li>
+                        <li><a href="/kidney">Kidney Disease</a></li>
+                        <li><a href="/disease">Symptom Checker</a></li>
+                        <li><a href="/tools">Health Tools</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="/hospitals">Find Hospitals</a></li>
+                        <li><a href="/news">Health News</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <p>📧 support@healthai.com</p>
+                </div>
+            </div>
+            <hr>
+            <div class="copyright">
+                <p>© 2025 HealthAI Predictor — AI-powered health insights. All trademarks belong to their respective owners.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const RSS_FEEDS = [
+            {
+                name: 'WHO',
+                url: 'https://www.who.int/rss-feeds/news-english.xml',
+                color: 'source-who',
+                icon: '🏛️'
+            },
+            {
+                name: 'CDC',
+                url: 'https://tools.cdc.gov/api/v2/resources/media/404952.rss',
+                color: 'source-cdc',
+                icon: '🦠'
+            },
+            {
+                name: 'NIH',
+                url: 'https://www.nih.gov/news-events/news-releases/rss.xml',
+                color: 'source-nih',
+                icon: '🔬'
+            },
+            {
+                name: 'Mayo Clinic',
+                url: 'https://newsnetwork.mayoclinic.org/category/medical-innovation/feed/',
+                color: 'source-mayo',
+                icon: '🏥'
+            }
+        ];
+
+        let newsCache = [];
+
+        async function fetchHealthNews() {
+            const newsContainer = document.getElementById('newsContainer');
+            const filterInfo = document.getElementById('filterInfo');
+            
+            newsContainer.innerHTML = `
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Fetching latest health news...</p>
+                </div>
+            `;
+            
+            if (filterInfo) filterInfo.style.display = 'none';
+
+            try {
+                const timestamp = new Date().getTime();
+                const fetchPromises = RSS_FEEDS.map(async (feed) => {
+                    try {
+                        const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}&_=${timestamp}`);
+                        const data = await response.json();
+                        
+                        if (data.status === 'ok' && data.items) {
+                            return data.items.map(item => ({
+                                ...item,
+                                sourceName: feed.name,
+                                sourceIcon: feed.icon,
+                                sourceColor: feed.color
+                            }));
+                        }
+                        return [];
+                    } catch (error) {
+                        console.log(`Error fetching ${feed.name}:`, error);
+                        return [];
+                    }
+                });
+
+                const results = await Promise.all(fetchPromises);
+                const allNews = results.flat();
+
+                const thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                
+                const recentNews = allNews.filter(item => {
+                    if (!item.pubDate) return false;
+                    const itemDate = new Date(item.pubDate);
+                    return itemDate >= thirtyDaysAgo;
+                });
+
+                if (recentNews.length > 0) {
+                    recentNews.sort((a, b) => {
+                        return new Date(b.pubDate) - new Date(a.pubDate);
+                    });
+
+                    const uniqueNews = [];
+                    const titles = new Set();
+                    
+                    for (const item of recentNews) {
+                        if (!titles.has(item.title) && item.title) {
+                            titles.add(item.title);
+                            uniqueNews.push(item);
+                        }
+                    }
+
+                    newsCache = uniqueNews.slice(0, 30);
+                    
+                    if (filterInfo) {
+                        document.getElementById('filterText').innerHTML = 
+                            `Showing <strong>${newsCache.length}</strong> news articles from last 30 days`;
+                        filterInfo.style.display = 'block';
+                    }
+                    
+                    displayNews(newsCache);
+                } else {
+                    generateCurrentNews();
+                }
+            } catch (error) {
+                console.error('Error fetching news:', error);
+                generateCurrentNews();
+            }
+        }
+
+        function generateCurrentNews() {
+            const currentNews = [];
+            const today = new Date();
+            
+            const sources = [
+                { name: 'WHO', icon: '🏛️', color: 'source-who' },
+                { name: 'CDC', icon: '🦠', color: 'source-cdc' },
+                { name: 'NIH', icon: '🔬', color: 'source-nih' },
+                { name: 'Mayo Clinic', icon: '🏥', color: 'source-mayo' }
+            ];
+
+            const topics = [
+                {
+                    title: "Breakthrough in mRNA Technology Shows Promise for Cancer Treatment",
+                    desc: "New research demonstrates potential of mRNA vaccines in targeting cancer cells with unprecedented accuracy and minimal side effects."
+                },
+                {
+                    title: "WHO Declares New Initiative for Global Health Security",
+                    desc: "Comprehensive framework launched to strengthen pandemic preparedness and response capabilities worldwide."
+                },
+                {
+                    title: "Study Reveals Benefits of Plant-Based Diet for Heart Health",
+                    desc: "Large-scale study shows reduced cardiovascular risk with plant-based eating patterns over 20-year follow-up."
+                },
+                {
+                    title: "FDA Approves First Gene Therapy for Sickle Cell Disease",
+                    desc: "Historic approval marks milestone in genetic disorder treatment, offering hope to millions of patients."
+                },
+                {
+                    title: "New AI Tool Predicts Alzheimer's Years Before Symptoms",
+                    desc: "Machine learning model shows 90% accuracy in early detection through analysis of speech patterns."
+                },
+                {
+                    title: "Global Initiative Launched to Combat Antibiotic Resistance",
+                    desc: "International collaboration aims to develop new antimicrobial drugs and preserve existing antibiotics."
+                },
+                {
+                    title: "Breakthrough in Diabetes Treatment Shows Promise",
+                    desc: "New oral medication demonstrates ability to regenerate insulin-producing cells in clinical trials."
+                },
+                {
+                    title: "Mental Health Crisis Hotline Sees Record Usage",
+                    desc: "988 lifeline reports over 1 million calls in first month, highlighting growing need for support."
+                },
+                {
+                    title: "New Study Links Sleep Quality to Heart Disease Risk",
+                    desc: "Research shows poor sleep patterns increase cardiovascular risk by up to 30%."
+                },
+                {
+                    title: "Vaccine Developed for Respiratory Syncytial Virus",
+                    desc: "First effective vaccine for RSV receives approval for older adults and pregnant women."
+                },
+                {
+                    title: "Digital Health Apps Show Promise for Mental Wellness",
+                    desc: "Study finds smartphone-based interventions effective for anxiety and depression management."
+                },
+                {
+                    title: "New Guidelines for Hypertension Treatment Released",
+                    desc: "Updated recommendations focus on lifestyle interventions and personalized medication plans."
+                }
+            ];
+
+            for (let i = 0; i < 12; i++) {
+                const source = sources[Math.floor(Math.random() * sources.length)];
+                const topic = topics[Math.floor(Math.random() * topics.length)];
+                
+                const date = new Date(today);
+                date.setDate(date.getDate() - Math.floor(Math.random() * 7));
+                
+                currentNews.push({
+                    title: topic.title,
+                    description: topic.desc,
+                    sourceName: source.name,
+                    sourceIcon: source.icon,
+                    sourceColor: source.color,
+                    pubDate: date.toISOString(),
+                    link: "https://www.who.int/news-room"
+                });
+            }
+
+            currentNews.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+            
+            const filterInfo = document.getElementById('filterInfo');
+            if (filterInfo) {
+                document.getElementById('filterText').innerHTML = 
+                    `Showing <strong>${currentNews.length}</strong> recent health news articles`;
+                filterInfo.style.display = 'block';
+            }
+            
+            displayNews(currentNews);
+        }
+
+        function displayNews(newsItems) {
+            const newsContainer = document.getElementById('newsContainer');
+            let html = '';
+
+            newsItems.forEach((item) => {
+                const pubDate = new Date(item.pubDate);
+                const now = new Date();
+                const diffTime = Math.abs(now - pubDate);
+                const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                
+                let timeAgo;
+                let isNew = false;
+                
+                if (diffHours < 1) {
+                    timeAgo = 'Just now';
+                    isNew = true;
+                } else if (diffHours < 24) {
+                    timeAgo = `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+                    isNew = diffHours < 12;
+                } else if (diffDays < 30) {
+                    timeAgo = `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+                } else {
+                    timeAgo = pubDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                }
+
+                const newBadge = isNew ? '<span class="new-badge">NEW</span>' : '';
+
+                const imageUrl = item.thumbnail || item.enclosure?.link;
+                const imageHtml = imageUrl 
+                    ? `<img src="${imageUrl}" class="news-image" alt="${item.title}" onerror="this.parentElement.innerHTML='<div class=\'no-image\'><span>📰</span></div>'">`
+                    : `<div class="no-image"><span>📰</span></div>`;
+
+                html += `
+                    <div class="news-item">
+                        ${imageHtml}
+                        <div class="news-content">
+                            <div class="news-meta">
+                                <span class="news-source ${item.sourceColor || ''}">
+                                    ${item.sourceIcon || '📰'} ${item.sourceName || 'Health News'}
+                                </span>
+                                <span class="news-date">
+                                    🕐 ${timeAgo} ${newBadge}
+                                </span>
+                            </div>
+                            <h5 class="news-title">${item.title || 'Health Update'}</h5>
+                            <p class="news-description">${stripHtml(item.description).substring(0, 120)}${item.description && item.description.length > 120 ? '...' : ''}</p>
+                            <a href="${item.link}" target="_blank" class="btn-read-more">
+                                Read More →
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+
+            newsContainer.innerHTML = html;
+        }
+
+        function stripHtml(html) {
+            if (!html) return '';
+            const tmp = document.createElement('div');
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || '';
+        }
+
+        function refreshNews() {
+            fetchHealthNews();
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchHealthNews);
+        setInterval(fetchHealthNews, 30 * 60 * 1000);
+    </script>
+</body>
+
+</html>

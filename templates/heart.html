@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Heart Disease Predictor | HealthAI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='heart.css') }}">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo"> HealthAI </a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/heart" class="active">Heart</a></li>
+                <li><a href="/lung">Lung</a></li>
+                <li><a href="/diabetes">Diabetes</a></li>
+                <li><a href="/kidney">Kidney</a></li>
+                <li><a href="/disease">Disease</a></li>
+                <li><a href="/hospitals">Hospitals</a></li>
+                <li><a href="/news">News</a></li>
+                <li><a href="/tools">Tools</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="container hero-content">
+            <h1>❤️ Heart Disease Risk Assessment</h1>
+            <p>Evaluate your cardiovascular health using 13 clinical parameters. Our AI model provides accurate risk predictions based on medical data.</p>
+        </div>
+    </div>
+
+    <section class="prediction-section">
+        <div class="container">
+            <div class="prediction-card">
+                <div class="card-header">
+                    <h3>Clinical Parameters</h3>
+                    <p>Please fill in all the details below for accurate prediction</p>
+                </div>
+                <div class="card-body">
+                    <form id="heartForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Age (years)</label>
+                                <input type="number" name="age" min="1" max="120" step="1" placeholder="Enter age" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Sex</label>
+                                <select name="sex" required>
+                                    <option value="">Select gender</option>
+                                    <option value="1">Male</option>
+                                    <option value="0">Female</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Chest Pain Type</label>
+                                <select name="cp" required>
+                                    <option value="">Select chest pain type</option>
+                                    <option value="0">Typical Angina</option>
+                                    <option value="1">Atypical Angina</option>
+                                    <option value="2">Non-anginal Pain</option>
+                                    <option value="3">Asymptomatic</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Resting Blood Pressure (mm Hg)</label>
+                                <input type="number" name="trestbps" min="80" max="250" step="1" placeholder="Enter BP" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Cholesterol (mg/dl)</label>
+                                <input type="number" name="chol" min="100" max="600" step="1" placeholder="Enter cholesterol" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Fasting Blood Sugar > 120 mg/dl</label>
+                                <select name="fbs" required>
+                                    <option value="">Select</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Resting ECG Results</label>
+                                <select name="restecg" required>
+                                    <option value="">Select ECG result</option>
+                                    <option value="0">Normal</option>
+                                    <option value="1">ST-T Wave Abnormality</option>
+                                    <option value="2">Left Ventricular Hypertrophy</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Maximum Heart Rate</label>
+                                <input type="number" name="thalach" min="60" max="250" step="1" placeholder="Enter max heart rate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Exercise Induced Angina</label>
+                                <select name="exang" required>
+                                    <option value="">Select</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>ST Depression (oldpeak)</label>
+                                <input type="number" step="0.1" name="oldpeak" min="0" max="10" placeholder="Enter ST depression" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Slope of ST Segment</label>
+                                <select name="slope" required>
+                                    <option value="">Select slope</option>
+                                    <option value="0">Upsloping</option>
+                                    <option value="1">Flat</option>
+                                    <option value="2">Downsloping</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Number of Major Vessels (0-3)</label>
+                                <input type="number" name="ca" min="0" max="3" step="1" placeholder="Enter number of vessels" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Thalassemia</label>
+                                <select name="thal" required>
+                                    <option value="">Select thalassemia</option>
+                                    <option value="1">Normal</option>
+                                    <option value="2">Fixed Defect</option>
+                                    <option value="3">Reversible Defect</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="button-group">
+                            <button type="submit" class="btn-predict">Predict Risk</button>
+                            <button type="button" class="btn-reset" onclick="resetForm()">Reset Form</button>
+                        </div>
+                    </form>
+                    
+                    <div id="loading" class="loading" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>Analyzing your data...</p>
+                    </div>
+                    
+                    <div id="resultCard" class="result-card" style="display: none;">
+                        <h4>📊 Prediction Results</h4>
+                        <div id="resultContent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="disclaimer">
+        <div class="container">
+            <p>⚠️ Our prediction model is trained on clinical datasets and should not replace professional medical advice. Always consult a doctor for accurate diagnosis.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>HealthAI Predictor</h4>
+                    <p>Democratizing early disease detection through artificial intelligence and medical research.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Access</h4>
+                    <ul>
+                        <li><a href="/heart">Heart Disease</a></li>
+                        <li><a href="/lung">Lung Cancer</a></li>
+                        <li><a href="/diabetes">Diabetes</a></li>
+                        <li><a href="/kidney">Kidney Disease</a></li>
+                        <li><a href="/disease">Symptom Checker</a></li>
+                        <li><a href="/tools">Health Tools</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="/hospitals">Find Hospitals</a></li>
+                        <li><a href="/news">Health News</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <p>📧 support@healthai.com</p>
+                </div>
+            </div>
+            <hr>
+            <div class="copyright">
+                <p>© 2025 HealthAI Predictor — AI-powered health insights. All trademarks belong to their respective owners.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('heartForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const patientData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                patientData[key] = parseFloat(value);
+            }
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultCard').style.display = 'none';
+            
+            try {
+                const response = await fetch('/predict/heart', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({patient_data: patientData})
+                });
+                
+                const result = await response.json();
+                document.getElementById('loading').style.display = 'none';
+                
+                if (result.success) {
+                    document.getElementById('resultContent').innerHTML = `
+                        <div class="result-box">
+                            <h5>🎯 Prediction Result:</h5>
+                            <p class="result-value">${result.prediction}</p>
+                            <hr>
+                            <h6>⚠️ Risk Level:</h6>
+                            <p class="risk-value">${result.risk_level}</p>
+                            <h6>📈 Confidence:</h6>
+                            <p class="confidence-value">${result.confidence}</p>
+                            <hr>
+                            <p class="message"><small>${result.message}</small></p>
+                        </div>
+                    `;
+                    document.getElementById('resultCard').style.display = 'block';
+                    document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                alert('Error: ' + error);
+            }
+        });
+        
+        function resetForm() {
+            document.getElementById('heartForm').reset();
+            document.getElementById('resultCard').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

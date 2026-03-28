@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>General Disease Predictor | HealthAI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='disease.css') }}">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo"> HealthAI </a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/heart">Heart</a></li>
+                <li><a href="/lung">Lung</a></li>
+                <li><a href="/diabetes">Diabetes</a></li>
+                <li><a href="/kidney">Kidney</a></li>
+                <li><a href="/disease" class="active">Disease</a></li>
+                <li><a href="/hospitals">Hospitals</a></li>
+                <li><a href="/news">News</a></li>
+                <li><a href="/tools">Tools</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="container hero-content">
+            <h1>🩺 General Disease Predictor</h1>
+            <p>Select your symptoms from 134+ options. Our AI model will identify possible conditions and recommend medicines.</p>
+        </div>
+    </div>
+
+    <section class="prediction-section">
+        <div class="container">
+            <div class="prediction-card">
+                <div class="card-header">
+                    <h3>Symptom Checker</h3>
+                    <p>Select all symptoms you're experiencing</p>
+                </div>
+                <div class="card-body">
+                    <div class="search-container">
+                        <div class="search-wrapper">
+                            <input type="text" id="symptomSearch" placeholder="🔍 Search symptoms..." class="search-input">
+                        </div>
+                        <div class="button-group">
+                            <button type="button" class="btn-select-all" onclick="selectAllSymptoms()">✓ Select All</button>
+                            <button type="button" class="btn-clear-all" onclick="clearAllSymptoms()">✗ Clear All</button>
+                        </div>
+                    </div>
+                    
+                    <form id="diseaseForm">
+                        <div class="symptoms-grid" id="symptomsContainer">
+                            <div class="loading-spinner">
+                                <div class="spinner"></div>
+                                <p>Loading symptoms...</p>
+                            </div>
+                        </div>
+                        
+                        <div class="button-group-center">
+                            <button type="submit" class="btn-predict">Predict Disease</button>
+                        </div>
+                    </form>
+                    
+                    <div id="loading" class="loading" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>Analyzing your symptoms...</p>
+                    </div>
+                    
+                    <div id="resultCard" class="result-card" style="display: none;">
+                        <h4>📋 Diagnosis Results</h4>
+                        <div id="resultContent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="disclaimer">
+        <div class="container">
+            <p>⚠️ Our prediction model is trained on clinical datasets and should not replace professional medical advice. Always consult a doctor for accurate diagnosis.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>HealthAI Predictor</h4>
+                    <p>Democratizing early disease detection through artificial intelligence and medical research.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Access</h4>
+                    <ul>
+                        <li><a href="/heart">Heart Disease</a></li>
+                        <li><a href="/lung">Lung Cancer</a></li>
+                        <li><a href="/diabetes">Diabetes</a></li>
+                        <li><a href="/kidney">Kidney Disease</a></li>
+                        <li><a href="/disease">Symptom Checker</a></li>
+                        <li><a href="/tools">Health Tools</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="/hospitals">Find Hospitals</a></li>
+                        <li><a href="/news">Health News</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <p>📧 support@healthai.com</p>
+                </div>
+            </div>
+            <hr>
+            <div class="copyright">
+                <p>© 2025 HealthAI Predictor — AI-powered health insights. All trademarks belong to their respective owners.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const SYMPTOM_COLUMNS = [
+            'itching', 'skin_rash', 'nodal_skin_eruptions', 'continuous_sneezing', 'shivering',
+            'chills', 'joint_pain', 'stomach_pain', 'acidity', 'ulcers_on_tongue',
+            'muscle_wasting', 'vomiting', 'burning_micturition', 'spotting_ urination', 'fatigue',
+            'weight_gain', 'anxiety', 'cold_hands_and_feets', 'mood_swings', 'weight_loss',
+            'restlessness', 'lethargy', 'patches_in_throat', 'irregular_sugar_level', 'cough',
+            'high_fever', 'sunken_eyes', 'breathlessness', 'sweating', 'dehydration',
+            'indigestion', 'headache', 'yellowish_skin', 'dark_urine', 'nausea',
+            'loss_of_appetite', 'pain_behind_the_eyes', 'back_pain', 'constipation', 'abdominal_pain',
+            'diarrhoea', 'mild_fever', 'yellow_urine', 'yellowing_of_eyes', 'acute_liver_failure',
+            'fluid_overload', 'swelling_of_stomach', 'swelled_lymph_nodes', 'malaise',
+            'blurred_and_distorted_vision', 'phlegm', 'throat_irritation', 'redness_of_eyes',
+            'sinus_pressure', 'runny_nose', 'congestion', 'chest_pain', 'weakness_in_limbs',
+            'fast_heart_rate', 'pain_during_bowel_movements', 'pain_in_anal_region', 'bloody_stool',
+            'irritation_in_anus', 'neck_pain', 'dizziness', 'cramps', 'bruising', 'obesity',
+            'swollen_legs', 'swollen_blood_vessels', 'puffy_face_and_eyes', 'enlarged_thyroid',
+            'brittle_nails', 'swollen_extremeties', 'excessive_hunger', 'extra_marital_contacts',
+            'drying_and_tingling_lips', 'slurred_speech', 'knee_pain', 'hip_joint_pain',
+            'muscle_weakness', 'stiff_neck', 'swelling_joints', 'movement_stiffness',
+            'spinning_movements', 'loss_of_balance', 'unsteadiness', 'weakness_of_one_body_side',
+            'loss_of_smell', 'bladder_discomfort', 'foul_smell_of urine', 'continuous_feel_of_urine',
+            'passage_of_gases', 'internal_itching', 'toxic_look_(typhos)', 'depression',
+            'irritability', 'muscle_pain', 'altered_sensorium', 'red_spots_over_body', 'belly_pain',
+            'abnormal_menstruation', 'dischromic _patches', 'watering_from_eyes',
+            'increased_appetite', 'polyuria', 'family_history', 'mucoid_sputum', 'rusty_sputum',
+            'lack_of_concentration', 'visual_disturbances', 'receiving_blood_transfusion',
+            'receiving_unsterile_injections', 'coma', 'stomach_bleeding', 'distention_of_abdomen',
+            'history_of_alcohol_consumption', 'fluid_overload.1', 'blood_in_sputum',
+            'prominent_veins_on_calf', 'palpitations', 'painful_walking', 'pus_filled_pimples',
+            'blackheads', 'scurring', 'skin_peeling', 'silver_like_dusting', 'small_dents_in_nails',
+            'inflammatory_nails', 'blister', 'red_sore_around_nose', 'yellow_crust_ooze',
+            'Urinating_a_lot', 'Heartburn'
+        ];
+
+        let currentSymptoms = [...SYMPTOM_COLUMNS];
+
+        function formatSymptomName(symptom) {
+            return symptom.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+
+        function displaySymptoms(symptoms) {
+            const container = document.getElementById('symptomsContainer');
+            if (symptoms.length === 0) {
+                container.innerHTML = '<div class="no-results">No symptoms found</div>';
+                return;
+            }
+            
+            let html = '';
+            symptoms.forEach((symptom, index) => {
+                const displayName = formatSymptomName(symptom);
+                html += `
+                    <div class="symptom-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="symptoms" value="${symptom}" class="symptom-checkbox">
+                            <span>${displayName}</span>
+                        </label>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        window.onload = function() {
+            displaySymptoms(SYMPTOM_COLUMNS);
+        };
+
+        document.getElementById('symptomSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filtered = SYMPTOM_COLUMNS.filter(s => s.toLowerCase().includes(searchTerm));
+            displaySymptoms(filtered);
+        });
+
+        function selectAllSymptoms() {
+            document.querySelectorAll('input[name="symptoms"]').forEach(cb => cb.checked = true);
+        }
+
+        function clearAllSymptoms() {
+            document.querySelectorAll('input[name="symptoms"]').forEach(cb => cb.checked = false);
+        }
+
+        document.getElementById('diseaseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const selected = [];
+            document.querySelectorAll('input[name="symptoms"]:checked').forEach(cb => selected.push(cb.value));
+            
+            if (selected.length === 0) {
+                alert('Please select at least one symptom');
+                return;
+            }
+            
+            const symptomDict = {};
+            SYMPTOM_COLUMNS.forEach(symptom => {
+                symptomDict[symptom] = selected.includes(symptom) ? 1 : 0;
+            });
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultCard').style.display = 'none';
+            
+            try {
+                const response = await fetch('/predict/disease', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({symptom_dict: symptomDict})
+                });
+                
+                const result = await response.json();
+                document.getElementById('loading').style.display = 'none';
+                
+                if (result.success) {
+                    document.getElementById('resultContent').innerHTML = `
+                        <div class="result-box">
+                            <h5>🎯 Predicted Disease:</h5>
+                            <p class="result-value">${result.disease}</p>
+                            <hr>
+                            <h6>💊 Recommended Medicine:</h6>
+                            <p class="medicine-value">${result.medicine}</p>
+                            <hr>
+                            <p class="confidence-value">Confidence: ${result.confidence}</p>
+                            <p class="message"><small>⚠️ Please consult a doctor for proper diagnosis and treatment</small></p>
+                        </div>
+                    `;
+                    document.getElementById('resultCard').style.display = 'block';
+                    document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                alert('Error: ' + error.message);
+            }
+        });
+    </script>
+</body>
+
+</html>

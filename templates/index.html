@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>HealthAI | Smart Disease Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo"> HealthAI </a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/heart">Heart</a></li>
+                <li><a href="/lung">Lung</a></li>
+                <li><a href="/diabetes">Diabetes</a></li>
+                <li><a href="/kidney">Kidney</a></li>
+                <li><a href="/disease">Disease</a></li>
+                <li><a href="/hospitals">Hospitals</a></li>
+                <li><a href="/news">News</a></li>
+                <li><a href="/tools">Tools</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- hero section -->
+    <section class="hero">
+        <div class="container hero-content">
+            <h1>AI-Powered Health Risk Assessment</h1>
+            <p>Instant predictions for heart disease, diabetes, lung cancer, kidney issues & more — based on clinical &
+                lifestyle data.</p>
+            <a href="#services" class="btn">Explore Services →</a>
+        </div>
+    </section>
+
+    <!-- main services section -->
+    <section id="services" style="padding: 2rem 0 2rem;">
+        <div class="container">
+            <h2 class="section-title">Smart Prediction Tools</h2>
+            <p class="section-sub">Evidence-based machine learning models — fast, private, and easy to use</p>
+
+            <div class="services-grid">
+                <!-- Heart Disease Card -->
+                <div class="card" onclick="location.href='/heart'">
+                    <div class="card-icon">❤️</div>
+                    <h3>Heart Disease</h3>
+                    <p>Evaluate coronary risk with 13 parameters: age, cholesterol, BP, chest pain type, thallium, etc.
+                    </p>
+                    <div class="card-meta">
+                        <span class="badge">13 clinical markers</span>
+                        <span class="card-link">Check →</span>
+                    </div>
+                </div>
+                <!-- Lung Cancer Card -->
+                <div class="card" onclick="location.href='/lung'">
+                    <div class="card-icon">🫁</div>
+                    <h3>Lung Cancer</h3>
+                    <p>Lifestyle & symptom based: smoking, yellow fingers, fatigue, coughing, wheezing & more.</p>
+                    <div class="card-meta">
+                        <span class="badge">9 risk factors</span>
+                        <span class="card-link">Check →</span>
+                    </div>
+                </div>
+                <!-- Diabetes Card -->
+                <div class="card" onclick="location.href='/diabetes'">
+                    <div class="card-icon">💧</div>
+                    <h3>Diabetes Risk</h3>
+                    <p>Assess type-2 diabetes using BMI, glucose, family history, hypertension, and lifestyle habits.
+                    </p>
+                    <div class="card-meta">
+                        <span class="badge">8 health metrics</span>
+                        <span class="card-link">Check →</span>
+                    </div>
+                </div>
+                <!-- Kidney Disease Card -->
+                <div class="card" onclick="location.href='/kidney'">
+                    <div class="card-icon">🧫</div>
+                    <h3>Kidney Disease</h3>
+                    <p>Comprehensive lab analysis: creatinine, blood urea, albumin, RBC count, and 48 parameters.</p>
+                    <div class="card-meta">
+                        <span class="badge">48 medical features</span>
+                        <span class="card-link">Check →</span>
+                    </div>
+                </div>
+                <!-- General Disease (Symptom Checker) -->
+                <div class="card" onclick="location.href='/disease'">
+                    <div class="card-icon">🩺</div>
+                    <h3>General Disease</h3>
+                    <p>Symptom checker covering 134+ symptoms — get possible conditions & medicine recommendations.</p>
+                    <div class="card-meta">
+                        <span class="badge">134+ symptoms</span>
+                        <span class="card-link">Check →</span>
+                    </div>
+                </div>
+                <!-- Nearby Hospitals -->
+                <div class="card" onclick="location.href='/hospitals'">
+                    <div class="card-icon">🏥</div>
+                    <h3>Nearby Hospitals</h3>
+                    <p>Find clinics, emergency rooms & hospitals using live location & map integration.</p>
+                    <div class="card-meta">
+                        <span class="badge">Live geolocation</span>
+                        <span class="card-link">Find now →</span>
+                    </div>
+                </div>
+                <div class="card" onclick="location.href='/news'">
+                    <div class="card-icon">📰</div>
+                    <h3>Health News</h3>
+                    <p>Latest medical breakthroughs, wellness tips, public health alerts, and research updates.</p>
+                    <div class="card-meta">
+                        <span class="badge">Daily updates</span>
+                        <span class="card-link">Read news →</span>
+                    </div>
+                </div>
+                <div class="card" onclick="location.href='/tools'">
+                    <div class="card-icon">⚖️</div>
+                    <h3>Health Tools</h3>
+                    <p>BMI, BMR, ideal weight, body fat percentage, daily water intake — all in one dashboard.</p>
+                    <div class="card-meta">
+                        <span class="badge">5+ calculators</span>
+                        <span class="card-link">Try now →</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div style="background: #e6f4f1; padding: 1.8rem 0; margin: 1rem 0 0;">
+        <div class="container" style="text-align: center;">
+            <p style="font-size: 1rem; max-width: 700px; margin: 0 auto; color: #1f5e6e;"> Our prediction models are
+                trained on clinical datasets and should not replace professional medical advice. Always consult a doctor
+                for accurate diagnosis.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>HealthAI Predictor</h4>
+                    <p>Democratizing early disease detection through artificial intelligence and medical research.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Access</h4>
+                    <ul>
+                        <li><a href="/heart">Heart Disease</a></li>
+                        <li><a href="/lung">Lung Cancer</a></li>
+                        <li><a href="/diabetes">Diabetes</a></li>
+                        <li><a href="/kidney">Kidney Disease</a></li>
+                        <li><a href="/disease">Symptom Checker</a></li>
+                        <li><a href="/tools">Health Tools</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="/hospitals">Find Hospitals</a></li>
+                        <li><a href="/news">Health News</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <p>📧 support@healthai.com</p>
+                </div>
+            </div>
+            <hr>
+            <div class="copyright">
+                <p>© 2025 HealthAI Predictor — AI-powered health insights. All trademarks belong to their respective
+                    owners.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>
