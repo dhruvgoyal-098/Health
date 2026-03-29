@@ -184,7 +184,6 @@
             const smoking = formData.get('smoking_history');
             const smokingEncoded = smokingMap[smoking] || [0, 0, 0, 0, 0];
 
-            // Create patient data object matching your model's expected features
             const patientData = {
                 'gender': parseInt(formData.get('gender')),
                 'age': parseFloat(formData.get('age')),
@@ -200,7 +199,6 @@
                 'smoking_history_not current': smokingEncoded[4]
             };
 
-            // Validate all required fields are filled
             const requiredFields = ['gender', 'age', 'hypertension', 'heart_disease', 'bmi', 'HbA1c_level', 'blood_glucose_level'];
             let isValid = true;
             for (let field of requiredFields) {
@@ -223,7 +221,6 @@
                     body: JSON.stringify({ patient_data: patientData })
                 });
 
-                // Check if response is OK
                 if (!response.ok) {
                     const errorText = await response.text();
                     console.error('Server error response:', errorText);
@@ -236,25 +233,24 @@
                 document.getElementById('loading').style.display = 'none';
 
                 if (result.success) {
-                    // Set color based on risk level
                     let riskColor = '';
                     if (result.risk_level === 'High') riskColor = '#dc3545';
                     else if (result.risk_level === 'Moderate') riskColor = '#fd7e14';
                     else riskColor = '#28a745';
 
                     document.getElementById('resultContent').innerHTML = `
-                <div class="result-box">
-                    <h5>🎯 Prediction Result:</h5>
-                    <p class="result-value">${result.prediction}</p>
-                    <hr>
-                    <h6>⚠️ Risk Level:</h6>
-                    <p class="risk-value" style="color: ${riskColor}; font-weight: bold;">${result.risk_level}</p>
-                    <h6>📈 Confidence:</h6>
-                    <p class="confidence-value">${result.confidence}</p>
-                    <hr>
-                    <p class="message"><small>${result.message}</small></p>
-                </div>
-            `;
+                    <div class="result-box">
+                        <h5>🎯 Prediction Result:</h5>
+                        <p class="result-value">${result.prediction}</p>
+                        <hr>
+                        <h6>⚠️ Risk Level:</h6>
+                        <p class="risk-value" style="color: ${riskColor}; font-weight: bold;">${result.risk_level}</p>
+                        <h6>📈 Confidence:</h6>
+                        <p class="confidence-value">${result.confidence}</p>
+                        <hr>
+                        <p class="message"><small>${result.message}</small></p>
+                    </div>
+                `;
                     document.getElementById('resultCard').style.display = 'block';
                     document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
                 } else {
@@ -266,6 +262,12 @@
                 alert('Error connecting to server. Please make sure the Flask server is running.\n\n' + error.message);
             }
         });
+
+        // Add this missing function
+        function resetForm() {
+            document.getElementById('diabetesForm').reset();
+            document.getElementById('resultCard').style.display = 'none';
+        }
     </script>
 </body>
 
