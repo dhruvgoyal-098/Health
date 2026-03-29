@@ -1,13 +1,15 @@
 import numpy as np
-import pickle
+import xgboost as xgb
 import os
+
 MODEL_DIR = os.path.dirname(os.path.abspath(__file__))
-model_path = os.path.join(MODEL_DIR, 'diabetes.pkl')
-with open(model_path, 'rb') as f:
-    model = pickle.load(f)
-if hasattr(model, 'use_label_encoder'):
-    model.use_label_encoder = False
+model_path = os.path.join(MODEL_DIR, 'diabetes.json')
+
+model = xgb.XGBClassifier()
+model.load_model(model_path)
+
 DIABETES_FEATURES = ['gender', 'age', 'hypertension', 'heart_disease', 'bmi', 'HbA1c_level', 'blood_glucose_level', 'smoking_history_current', 'smoking_history_ever', 'smoking_history_former', 'smoking_history_never', 'smoking_history_not current']
+
 def predict_diabetes(feature_array):
     feature_array_np = np.array(feature_array, dtype=float).reshape(1, -1)
     prediction = model.predict(feature_array_np)[0]
@@ -33,6 +35,7 @@ def predict_diabetes(feature_array):
         'confidence': confidence,
         'error': None
     }
+
 def predict_diabetes_from_dict(feature_dict):
     feature_array = [float(feature_dict.get(name, 0)) for name in DIABETES_FEATURES]
     return predict_diabetes(feature_array)
