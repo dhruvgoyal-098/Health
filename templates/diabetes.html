@@ -166,17 +166,9 @@
             </div>
         </div>
     </footer>
-
-    // Replace the existing script section with this updated version
     <script>
-        const getBaseUrl = () => {
-            const { protocol, hostname, port } = window.location;
-            return `${protocol}//${hostname}${port ? ':' + port : ''}`;
-        };
-
         document.getElementById('diabetesForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const formData = new FormData(e.target);
             const smokingMap = {
                 'current': [1, 0, 0, 0, 0],
@@ -189,7 +181,6 @@
 
             const smoking = formData.get('smoking_history');
             const smokingEncoded = smokingMap[smoking] || [0, 0, 0, 0, 0];
-
             const requiredFields = ['gender', 'age', 'hypertension', 'heart_disease', 'bmi', 'HbA1c_level', 'blood_glucose_level'];
             let isValid = true;
             for (let field of requiredFields) {
@@ -220,41 +211,22 @@
             document.getElementById('loading').style.display = 'block';
             document.getElementById('resultCard').style.display = 'none';
 
-            try {
-                // Use absolute path for the API endpoint
-                const apiUrl = '/predict/diabetes';
-                console.log('Sending request to:', apiUrl);
-                console.log('Patient data:', patientData);
+            const response = await fetch('/predict/diabetes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ patient_data: patientData })
+            });
 
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ patient_data: patientData })
-                });
+            const result = await response.json();
+            document.getElementById('loading').style.display = 'none';
 
-                console.log('Response status:', response.status);
+            if (result.success) {
+                let riskColor = '';
+                if (result.risk_level === 'High') riskColor = '#dc3545';
+                else if (result.risk_level === 'Moderate') riskColor = '#fd7e14';
+                else riskColor = '#28a745';
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('Server error response:', errorText);
-                    throw new Error(`Server error: ${response.status} - ${errorText}`);
-                }
-
-                const result = await response.json();
-                console.log('Prediction result:', result);
-
-                document.getElementById('loading').style.display = 'none';
-
-                if (result.success) {
-                    let riskColor = '';
-                    if (result.risk_level === 'High') riskColor = '#dc3545';
-                    else if (result.risk_level === 'Moderate') riskColor = '#fd7e14';
-                    else riskColor = '#28a745';
-
-                    document.getElementById('resultContent').innerHTML = `
+                document.getElementById('resultContent').innerHTML = `
                     <div class="result-box">
                         <h5>🎯 Prediction Result:</h5>
                         <p class="result-value" style="font-size: 24px; font-weight: bold;">${result.prediction}</p>
@@ -267,22 +239,10 @@
                         <p class="message"><small>${result.message}</small></p>
                     </div>
                 `;
-                    document.getElementById('resultCard').style.display = 'block';
-                    document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
-                } else {
-                    alert('Error: ' + (result.error || 'Unknown error occurred'));
-                }
-            } catch (error) {
-                console.error('Fetch error:', error);
-                document.getElementById('loading').style.display = 'none';
-                alert('Error connecting to server. Please check:\n\n' +
-                    '1. If the server is running\n' +
-                    '2. Network connection\n' +
-                    '3. Browser console for details\n\n' +
-                    'Error: ' + error.message);
+                document.getElementById('resultCard').style.display = 'block';
+                document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
             }
         });
-
         function resetForm() {
             document.getElementById('diabetesForm').reset();
             document.getElementById('resultCard').style.display = 'none';
