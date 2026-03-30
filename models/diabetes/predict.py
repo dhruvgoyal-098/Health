@@ -3,10 +3,18 @@ import pickle
 import os
 MODEL_DIR = os.path.dirname(os.path.abspath(__file__))
 def load_model_files():
-    model_path = os.path.join(MODEL_DIR, 'diabetes.pkl')
-    with open(model_path, 'rb') as f:
-        model = pickle.load(f)
-    return model
+    try:
+        model_path = os.path.join(MODEL_DIR, 'diabetes.pkl')
+        print(f"Looking for model at: {model_path}")  
+        if not os.path.exists(model_path):
+            print(f"Model file not found at {model_path}")
+            print(f"Files in {MODEL_DIR}: {os.listdir(MODEL_DIR)}")
+        with open(model_path, 'rb') as f:
+            model = pickle.load(f)
+        return model
+    except Exception as e:
+        print(f"Error loading diabetes model: {str(e)}")
+        raise
 model = load_model_files()
 DIABETES_FEATURES = ['gender', 'age', 'hypertension', 'heart_disease', 'bmi', 'HbA1c_level', 'blood_glucose_level', 'smoking_history_current', 'smoking_history_ever', 'smoking_history_former', 'smoking_history_never', 'smoking_history_not current']
 

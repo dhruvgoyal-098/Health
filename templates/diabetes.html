@@ -167,7 +167,13 @@
         </div>
     </footer>
 
+    // Replace the existing script section with this updated version
     <script>
+        const getBaseUrl = () => {
+            const { protocol, hostname, port } = window.location;
+            return `${protocol}//${hostname}${port ? ':' + port : ''}`;
+        };
+
         document.getElementById('diabetesForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -184,6 +190,18 @@
             const smoking = formData.get('smoking_history');
             const smokingEncoded = smokingMap[smoking] || [0, 0, 0, 0, 0];
 
+            const requiredFields = ['gender', 'age', 'hypertension', 'heart_disease', 'bmi', 'HbA1c_level', 'blood_glucose_level'];
+            let isValid = true;
+            for (let field of requiredFields) {
+                if (!formData.get(field)) {
+                    isValid = false;
+                    alert(`Please fill in ${field.replace('_', ' ')}`);
+                    break;
+                }
+            }
+
+            if (!isValid) return;
+
             const patientData = {
                 'gender': parseInt(formData.get('gender')),
                 'age': parseFloat(formData.get('age')),
@@ -199,32 +217,30 @@
                 'smoking_history_not current': smokingEncoded[4]
             };
 
-            const requiredFields = ['gender', 'age', 'hypertension', 'heart_disease', 'bmi', 'HbA1c_level', 'blood_glucose_level'];
-            let isValid = true;
-            for (let field of requiredFields) {
-                if (!formData.get(field)) {
-                    isValid = false;
-                    alert(`Please fill in ${field.replace('_', ' ')}`);
-                    break;
-                }
-            }
-
-            if (!isValid) return;
-
             document.getElementById('loading').style.display = 'block';
             document.getElementById('resultCard').style.display = 'none';
 
             try {
-                const response = await fetch('/predict/diabetes', {
+                // Use absolute path for the API endpoint
+                const apiUrl = '/predict/diabetes';
+                console.log('Sending request to:', apiUrl);
+                console.log('Patient data:', patientData);
+
+                const response = await fetch(apiUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
                     body: JSON.stringify({ patient_data: patientData })
                 });
+
+                console.log('Response status:', response.status);
 
                 if (!response.ok) {
                     const errorText = await response.text();
                     console.error('Server error response:', errorText);
-                    throw new Error(`Server error: ${response.status}`);
+                    throw new Error(`Server error: ${response.status} - ${errorText}`);
                 }
 
                 const result = await response.json();
@@ -241,12 +257,12 @@
                     document.getElementById('resultContent').innerHTML = `
                     <div class="result-box">
                         <h5>🎯 Prediction Result:</h5>
-                        <p class="result-value">${result.prediction}</p>
+                        <p class="result-value" style="font-size: 24px; font-weight: bold;">${result.prediction}</p>
                         <hr>
                         <h6>⚠️ Risk Level:</h6>
-                        <p class="risk-value" style="color: ${riskColor}; font-weight: bold;">${result.risk_level}</p>
+                        <p class="risk-value" style="color: ${riskColor}; font-weight: bold; font-size: 18px;">${result.risk_level}</p>
                         <h6>📈 Confidence:</h6>
-                        <p class="confidence-value">${result.confidence}</p>
+                        <p class="confidence-value" style="font-size: 18px;">${result.confidence}</p>
                         <hr>
                         <p class="message"><small>${result.message}</small></p>
                     </div>
@@ -259,11 +275,14 @@
             } catch (error) {
                 console.error('Fetch error:', error);
                 document.getElementById('loading').style.display = 'none';
-                alert('Error connecting to server. Please make sure the Flask server is running.\n\n' + error.message);
+                alert('Error connecting to server. Please check:\n\n' +
+                    '1. If the server is running\n' +
+                    '2. Network connection\n' +
+                    '3. Browser console for details\n\n' +
+                    'Error: ' + error.message);
             }
         });
 
-        // Add this missing function
         function resetForm() {
             document.getElementById('diabetesForm').reset();
             document.getElementById('resultCard').style.display = 'none';

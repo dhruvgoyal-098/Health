@@ -53,20 +53,27 @@ def diabetes():
     return render_template('diabetes.html')
 @app.route('/predict/diabetes', methods=['POST'])
 def predict_diabetes():
-    data = request.json
-    if 'features' in data:
-        features = data['features']
-        result = dp.predict_diabetes(features)
-    elif 'patient_data' in data:
-        patient_dict = data['patient_data']
-        result = dp.predict_diabetes_from_dict(patient_dict)
-    return jsonify({
-        'success': True,
-        'prediction': result['prediction_label'],
-        'risk_level': result['risk_level'],
-        'message': result['message'],
-        'confidence': f"{result['confidence']:.2%}"
-    })
+    try:
+        data = request.json
+        print(f"Received data: {data}")  
+        if 'features' in data:
+            features = data['features']
+            result = dp.predict_diabetes(features)
+        elif 'patient_data' in data:
+            patient_dict = data['patient_data']
+            result = dp.predict_diabetes_from_dict(patient_dict)
+        else:
+            return jsonify({'success': False, 'error': 'No valid data provided'}), 400
+        return jsonify({
+            'success': True,
+            'prediction': result['prediction_label'],
+            'risk_level': result['risk_level'],
+            'message': result['message'],
+            'confidence': f"{result['confidence']:.2%}"
+        })
+    except Exception as e:
+        print(f"Error in predict_diabetes: {str(e)}") 
+        return jsonify({'success': False, 'error': str(e)}), 500
 @app.route('/kidney')
 def kidney():
     return render_template('kidney.html')
